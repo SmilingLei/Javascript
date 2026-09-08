@@ -34,11 +34,13 @@
             <span v-if="col.treeNode" class="c1" :style="{ paddingLeft: indentLeft(scope.node) + 'px' }">
               <span class="tw" @click.stop="toggleExpand(scope.node)">{{ expandIcon(scope.node) }}</span>
               <slot :name="slotName(col)" v-bind="scope">
-                <span class="name">{{ scope.data[col.field] }}</span>
+                <render-cell v-if="col.render" :render="col.render" :scope="scope" />
+                <span v-else class="name">{{ formatCell(scope.data, col.field) }}</span>
               </slot>
             </span>
             <slot v-else :name="slotName(col)" v-bind="scope">
-              {{ formatCell(scope.data, col.field) }}
+              <render-cell v-if="col.render" :render="col.render" :scope="scope" />
+              <span v-else>{{ formatCell(scope.data, col.field) }}</span>
             </slot>
           </span>
         </span>
@@ -51,9 +53,25 @@
 /**
  * 公共 el-tree 封装（Vue 2.x + Element UI）
  * 按列渲染树节点，左右对比树可复用；对外暴露展开、定位、滚动方法。
+ * 列可配 render(h, scope) / slots，页面侧无需再写两套相同插槽。
  */
+var RenderCell = {
+  name: 'RenderCell',
+  functional: true,
+  props: {
+    render: Function,
+    scope: Object
+  },
+  render: function (h, ctx) {
+    return ctx.props.render(h, ctx.props.scope)
+  }
+}
+
 export default {
   name: 'ElTree',
+  components: {
+    RenderCell: RenderCell
+  },
   props: {
     data: {
       type: Array,

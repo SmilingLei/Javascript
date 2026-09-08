@@ -80,32 +80,12 @@
             :columns="treeColumns"
             node-key="code"
             :expanded-keys="expandedL"
-            :current-key="clickSide === 'L' ? selCode : linkedCode"
+            :current-key="currentKeyL"
             :row-class-name="rowClassNameL"
             empty-text="暂无节点"
             @node-click="onTreeClickL"
             @scroll="onTreeScrollL"
-          >
-            <template #name="{ data }">
-              <span class="name-cell">
-                <span class="name">{{ data.name }}</span>
-                <span v-if="nameExtra(data)" class="name-extra" :class="'ex-' + typeOf(data.code)">{{ nameExtra(data) }}</span>
-              </span>
-            </template>
-            <template #dwg="{ data }">
-              <span :class="{ miss: !data.dwg }">{{ data.dwg || '—' }}</span>
-            </template>
-            <template #qty="{ data }">×{{ data.qty }}</template>
-            <template #pos="{ data }">
-              <span :class="{ miss: !data.pos }" :title="posTitle(data)">{{ fmtPos(data) }}</span>
-            </template>
-            <template #rev="{ data }">
-              <span class="revtag">Rev.{{ data.rev }}</span>
-            </template>
-            <template #diff="{ data }">
-              <span v-if="diffTag(data)" class="dtag" :class="'tag-' + typeOf(data.code)">{{ diffTag(data) }}</span>
-            </template>
-          </el-tree-x>
+          />
         </div>
       </div>
 
@@ -121,32 +101,12 @@
             :columns="treeColumns"
             node-key="code"
             :expanded-keys="expandedR"
-            :current-key="clickSide === 'R' ? selCode : linkedCode"
+            :current-key="currentKeyR"
             :row-class-name="rowClassNameR"
             empty-text="暂无节点"
             @node-click="onTreeClickR"
             @scroll="onTreeScrollR"
-          >
-            <template #name="{ data }">
-              <span class="name-cell">
-                <span class="name">{{ data.name }}</span>
-                <span v-if="nameExtra(data)" class="name-extra" :class="'ex-' + typeOf(data.code)">{{ nameExtra(data) }}</span>
-              </span>
-            </template>
-            <template #dwg="{ data }">
-              <span :class="{ miss: !data.dwg }">{{ data.dwg || '—' }}</span>
-            </template>
-            <template #qty="{ data }">×{{ data.qty }}</template>
-            <template #pos="{ data }">
-              <span :class="{ miss: !data.pos }" :title="posTitle(data)">{{ fmtPos(data) }}</span>
-            </template>
-            <template #rev="{ data }">
-              <span class="revtag">Rev.{{ data.rev }}</span>
-            </template>
-            <template #diff="{ data }">
-              <span v-if="diffTag(data)" class="dtag" :class="'tag-' + typeOf(data.code)">{{ diffTag(data) }}</span>
-            </template>
-          </el-tree-x>
+          />
         </div>
       </div>
     </main>
@@ -428,19 +388,80 @@ export default {
         { t: '2026-08-18 16:40', badge: 'b-warn', tag: '驳回', txt: '工艺系统驳回 2 条 BOMLine（燃油喷嘴数量待确认），要求系统A复核' },
         { t: '2026-08-19 10:05', badge: 'b-ok', tag: '确认', txt: '系统A确认数量 16→20，通知工艺系统按新数量执行' },
         { t: '2026-08-20 11:30', badge: 'b-info', tag: '回传', txt: '工艺系统回传调整后 PBOM（RT-2026-0820-01），触发自动对比' }
-      ],
-      treeColumns: [
-        { field: 'name', title: '零组件名称（层级）', minWidth: 200, treeNode: true, slots: { default: 'name' } },
-        { field: 'dwg', title: '图号', width: 116, slots: { default: 'dwg' } },
-        { field: 'code', title: '件号', minWidth: 150 },
-        { field: 'qty', title: '数量', width: 56, slots: { default: 'qty' } },
-        { field: 'pos', title: '位置号', width: 98, slots: { default: 'pos' } },
-        { field: 'rev', title: '版本', width: 62, slots: { default: 'rev' } },
-        { field: 'diff', title: '差异', width: 88, slots: { default: 'diff' } }
       ]
     }
   },
   computed: {
+    currentKeyL: function () {
+      return this.clickSide === 'L' ? this.selCode : this.linkedCode
+    },
+    currentKeyR: function () {
+      return this.clickSide === 'R' ? this.selCode : this.linkedCode
+    },
+    treeColumns: function () {
+      var self = this
+      return [
+        {
+          field: 'name',
+          title: '零组件名称（层级）',
+          minWidth: 200,
+          treeNode: true,
+          render: function (h, scope) {
+            var extra = self.nameExtra(scope.data)
+            return h('span', { class: 'name-cell' }, [
+              h('span', { class: 'name' }, scope.data.name),
+              extra ? h('span', { class: ['name-extra', 'ex-' + self.typeOf(scope.data.code)] }, extra) : null
+            ])
+          }
+        },
+        {
+          field: 'dwg',
+          title: '图号',
+          width: 116,
+          render: function (h, scope) {
+            return h('span', { class: { miss: !scope.data.dwg } }, scope.data.dwg || '—')
+          }
+        },
+        { field: 'code', title: '件号', minWidth: 150 },
+        {
+          field: 'qty',
+          title: '数量',
+          width: 56,
+          render: function (h, scope) {
+            return h('span', '×' + scope.data.qty)
+          }
+        },
+        {
+          field: 'pos',
+          title: '位置号',
+          width: 98,
+          render: function (h, scope) {
+            return h('span', {
+              class: { miss: !scope.data.pos },
+              attrs: { title: self.posTitle(scope.data) }
+            }, self.fmtPos(scope.data))
+          }
+        },
+        {
+          field: 'rev',
+          title: '版本',
+          width: 62,
+          render: function (h, scope) {
+            return h('span', { class: 'revtag' }, 'Rev.' + scope.data.rev)
+          }
+        },
+        {
+          field: 'diff',
+          title: '差异',
+          width: 88,
+          render: function (h, scope) {
+            var tag = self.diffTag(scope.data)
+            if (!tag) return null
+            return h('span', { class: ['dtag', 'tag-' + self.typeOf(scope.data.code)] }, tag)
+          }
+        }
+      ]
+    },
     isFiltering: function () {
       return this.diffDone && (this.diffOnly || !!this.typeFilter)
     },
