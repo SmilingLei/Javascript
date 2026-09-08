@@ -73,41 +73,39 @@
           <span class="side">◀ 基准：下发快照</span>
           <span class="rev">SNAP-CN-2026-0091 · Rev.B · 2026-08-10</span>
         </div>
-        <div ref="treeBodyL" class="tree-body">
-          <vxe-table-x
-            ref="tableL"
+        <div class="tree-body">
+          <el-tree-x
+            ref="treeL"
             :data="displayBaseTree"
             :columns="treeColumns"
-            :height="tableHeight"
-            :tree-config="treeConfig"
-            :row-id="'code'"
+            node-key="code"
+            :expanded-keys="expandedL"
+            :current-key="clickSide === 'L' ? selCode : linkedCode"
             :row-class-name="rowClassNameL"
-            :border="'inner'"
-            :show-overflow="'title'"
             empty-text="暂无节点"
-            @cell-click="onTreeClickL"
-            @scroll="onTableScrollL"
+            @node-click="onTreeClickL"
+            @scroll="onTreeScrollL"
           >
-            <template #name="{ row }">
+            <template #name="{ data }">
               <span class="name-cell">
-                <span class="name">{{ row.name }}</span>
-                <span v-if="nameExtra(row)" class="name-extra" :class="'ex-' + typeOf(row.code)">{{ nameExtra(row) }}</span>
+                <span class="name">{{ data.name }}</span>
+                <span v-if="nameExtra(data)" class="name-extra" :class="'ex-' + typeOf(data.code)">{{ nameExtra(data) }}</span>
               </span>
             </template>
-            <template #dwg="{ row }">
-              <span :class="{ miss: !row.dwg }">{{ row.dwg || '—' }}</span>
+            <template #dwg="{ data }">
+              <span :class="{ miss: !data.dwg }">{{ data.dwg || '—' }}</span>
             </template>
-            <template #qty="{ row }">×{{ row.qty }}</template>
-            <template #pos="{ row }">
-              <span :class="{ miss: !row.pos }" :title="posTitle(row)">{{ fmtPos(row) }}</span>
+            <template #qty="{ data }">×{{ data.qty }}</template>
+            <template #pos="{ data }">
+              <span :class="{ miss: !data.pos }" :title="posTitle(data)">{{ fmtPos(data) }}</span>
             </template>
-            <template #rev="{ row }">
-              <span class="revtag">Rev.{{ row.rev }}</span>
+            <template #rev="{ data }">
+              <span class="revtag">Rev.{{ data.rev }}</span>
             </template>
-            <template #diff="{ row }">
-              <span v-if="diffTag(row)" class="dtag" :class="'tag-' + typeOf(row.code)">{{ diffTag(row) }}</span>
+            <template #diff="{ data }">
+              <span v-if="diffTag(data)" class="dtag" :class="'tag-' + typeOf(data.code)">{{ diffTag(data) }}</span>
             </template>
-          </vxe-table-x>
+          </el-tree-x>
         </div>
       </div>
 
@@ -116,41 +114,39 @@
           <span class="side">对比：工艺系统回传</span>
           <span class="rev">RT-2026-0820-01 · 2026-08-20</span>
         </div>
-        <div ref="treeBodyR" class="tree-body">
-          <vxe-table-x
-            ref="tableR"
+        <div class="tree-body">
+          <el-tree-x
+            ref="treeR"
             :data="displayRetTree"
             :columns="treeColumns"
-            :height="tableHeight"
-            :tree-config="treeConfig"
-            :row-id="'code'"
+            node-key="code"
+            :expanded-keys="expandedR"
+            :current-key="clickSide === 'R' ? selCode : linkedCode"
             :row-class-name="rowClassNameR"
-            :border="'inner'"
-            :show-overflow="'title'"
             empty-text="暂无节点"
-            @cell-click="onTreeClickR"
-            @scroll="onTableScrollR"
+            @node-click="onTreeClickR"
+            @scroll="onTreeScrollR"
           >
-            <template #name="{ row }">
+            <template #name="{ data }">
               <span class="name-cell">
-                <span class="name">{{ row.name }}</span>
-                <span v-if="nameExtra(row)" class="name-extra" :class="'ex-' + typeOf(row.code)">{{ nameExtra(row) }}</span>
+                <span class="name">{{ data.name }}</span>
+                <span v-if="nameExtra(data)" class="name-extra" :class="'ex-' + typeOf(data.code)">{{ nameExtra(data) }}</span>
               </span>
             </template>
-            <template #dwg="{ row }">
-              <span :class="{ miss: !row.dwg }">{{ row.dwg || '—' }}</span>
+            <template #dwg="{ data }">
+              <span :class="{ miss: !data.dwg }">{{ data.dwg || '—' }}</span>
             </template>
-            <template #qty="{ row }">×{{ row.qty }}</template>
-            <template #pos="{ row }">
-              <span :class="{ miss: !row.pos }" :title="posTitle(row)">{{ fmtPos(row) }}</span>
+            <template #qty="{ data }">×{{ data.qty }}</template>
+            <template #pos="{ data }">
+              <span :class="{ miss: !data.pos }" :title="posTitle(data)">{{ fmtPos(data) }}</span>
             </template>
-            <template #rev="{ row }">
-              <span class="revtag">Rev.{{ row.rev }}</span>
+            <template #rev="{ data }">
+              <span class="revtag">Rev.{{ data.rev }}</span>
             </template>
-            <template #diff="{ row }">
-              <span v-if="diffTag(row)" class="dtag" :class="'tag-' + typeOf(row.code)">{{ diffTag(row) }}</span>
+            <template #diff="{ data }">
+              <span v-if="diffTag(data)" class="dtag" :class="'tag-' + typeOf(data.code)">{{ diffTag(data) }}</span>
             </template>
-          </vxe-table-x>
+          </el-tree-x>
         </div>
       </div>
     </main>
@@ -158,51 +154,59 @@
     <div class="bottom">
       <el-tabs v-model="activeTab" class="btabs">
         <el-tab-pane label="变更明细清单" name="detail">
-          <vxe-table-x
-            :data="diffList"
-            :columns="detailColumns"
-            :height="210"
-            :row-id="'code'"
-            :border="true"
-            empty-text="暂无差异"
-          >
-            <template #tt="{ row }">
-              <span class="tt" :style="{ background: ttColor[row.cls] }">{{ row.tt }}</span>
-            </template>
-            <template #status="{ row }">
-              <span v-if="row.status === 'accepted'" class="st-ok">✓ 已接受</span>
-              <span v-else-if="row.status === 'rejected'" class="st-no">✗ 已驳回</span>
-              <span v-else class="st-wait">
-                待确认
-                <el-button size="mini" @click.stop="acceptDiff(row)">接受</el-button>
-                <el-button size="mini" @click.stop="rejectDiff(row)">驳回</el-button>
-              </span>
-            </template>
-          </vxe-table-x>
+          <el-table :data="diffList" border size="mini" height="210" empty-text="暂无差异">
+            <el-table-column label="类型" width="110">
+              <template slot-scope="{ row }">
+                <span class="tt" :style="{ background: ttColor[row.cls] }">{{ row.tt }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="code" label="件号" min-width="160" />
+            <el-table-column prop="name" label="名称" min-width="160" />
+            <el-table-column prop="detail" label="变更明细" min-width="280" />
+            <el-table-column label="状态" width="180">
+              <template slot-scope="{ row }">
+                <span v-if="row.status === 'accepted'" class="st-ok">✓ 已接受</span>
+                <span v-else-if="row.status === 'rejected'" class="st-no">✗ 已驳回</span>
+                <span v-else class="st-wait">
+                  待确认
+                  <el-button size="mini" @click.stop="acceptDiff(row)">接受</el-button>
+                  <el-button size="mini" @click.stop="rejectDiff(row)">驳回</el-button>
+                </span>
+              </template>
+            </el-table-column>
+          </el-table>
         </el-tab-pane>
 
         <el-tab-pane label="属性差异明细（物料 / BOMLine引用）" name="attr">
-          <vxe-table-x
+          <el-table
             :data="attrRows"
-            :columns="attrColumns"
-            :height="210"
-            :row-id="'_id'"
-            :border="true"
+            border
+            size="mini"
+            height="210"
             :span-method="attrSpanMethod"
             :row-class-name="attrRowClassName"
             empty-text="暂无属性级差异"
           >
-            <template #old="{ row }">
-              <span v-if="!row._group" class="old">{{ row.o }}</span>
-            </template>
-            <template #new="{ row }">
-              <span v-if="!row._group" class="new">{{ row.n }}</span>
-            </template>
-            <template #group="{ row }">
-              <span v-if="row._group" class="agroup">{{ row.title }}</span>
-              <span v-else class="mono">{{ row.code }}</span>
-            </template>
-          </vxe-table-x>
+            <el-table-column label="件号" min-width="150">
+              <template slot-scope="{ row }">
+                <span v-if="row._group" class="agroup">{{ row.title }}</span>
+                <span v-else class="mono">{{ row.code }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="name" label="属性组" min-width="140" />
+            <el-table-column prop="f" label="属性字段" width="120" />
+            <el-table-column label="旧值（基准快照）" min-width="140">
+              <template slot-scope="{ row }">
+                <span v-if="!row._group" class="old">{{ row.o }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="新值（回传版本）" min-width="140">
+              <template slot-scope="{ row }">
+                <span v-if="!row._group" class="new">{{ row.n }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="path" label="所属 BOMLine 路径" min-width="180" />
+          </el-table>
         </el-tab-pane>
 
         <el-tab-pane label="协同日志（含二次回传）" name="log">
@@ -250,7 +254,7 @@
 </template>
 
 <script>
-import VxeTable from '../components/VxeTable.vue'
+import ElTree from '../components/ElTree.vue'
 
 var REPLACE_MAP = {
   'WS10-CMB-S03-001': 'WS10-CMB-S03-001N'
@@ -305,6 +309,31 @@ function findParent(tree, code) {
     })
   })(tree, '')
   return r
+}
+
+function collectKeys(tree, onlyParents) {
+  var keys = []
+  ;(function walk(nodes) {
+    (nodes || []).forEach(function (n) {
+      var hasCh = n.children && n.children.length
+      if (!onlyParents || hasCh) keys.push(n.code)
+      if (hasCh) walk(n.children)
+    })
+  })(tree)
+  return keys
+}
+
+function keysToLevel(tree, level) {
+  var keys = []
+  ;(function walk(nodes, lv) {
+    (nodes || []).forEach(function (n) {
+      if (lv < level && n.children && n.children.length) {
+        keys.push(n.code)
+        walk(n.children, lv + 1)
+      }
+    })
+  })(tree, 0)
+  return keys
 }
 
 function createBaseTree() {
@@ -365,7 +394,7 @@ function createRetTree() {
 export default {
   name: 'PbomCompare',
   components: {
-    VxeTableX: VxeTable
+    ElTreeX: ElTree
   },
   data: function () {
     return {
@@ -376,7 +405,6 @@ export default {
       syncScroll: false,
       scrollLock: false,
       activeTab: 'detail',
-      tableHeight: 360,
       selCode: null,
       clickSide: null,
       linkedCode: null,
@@ -390,6 +418,8 @@ export default {
       ttColor: TT_COLOR,
       baseTree: createBaseTree(),
       retTree: createRetTree(),
+      expandedL: [],
+      expandedR: [],
       diffMap: {},
       diffList: [],
       logs: [
@@ -399,12 +429,6 @@ export default {
         { t: '2026-08-19 10:05', badge: 'b-ok', tag: '确认', txt: '系统A确认数量 16→20，通知工艺系统按新数量执行' },
         { t: '2026-08-20 11:30', badge: 'b-info', tag: '回传', txt: '工艺系统回传调整后 PBOM（RT-2026-0820-01），触发自动对比' }
       ],
-      treeConfig: {
-        children: 'children',
-        expandAll: false,
-        reserve: true,
-        indent: 16
-      },
       treeColumns: [
         { field: 'name', title: '零组件名称（层级）', minWidth: 200, treeNode: true, slots: { default: 'name' } },
         { field: 'dwg', title: '图号', width: 116, slots: { default: 'dwg' } },
@@ -413,21 +437,6 @@ export default {
         { field: 'pos', title: '位置号', width: 98, slots: { default: 'pos' } },
         { field: 'rev', title: '版本', width: 62, slots: { default: 'rev' } },
         { field: 'diff', title: '差异', width: 88, slots: { default: 'diff' } }
-      ],
-      detailColumns: [
-        { field: 'tt', title: '类型', width: 110, slots: { default: 'tt' } },
-        { field: 'code', title: '件号', minWidth: 160 },
-        { field: 'name', title: '名称', minWidth: 160 },
-        { field: 'detail', title: '变更明细', minWidth: 280 },
-        { field: 'status', title: '状态', width: 180, slots: { default: 'status' } }
-      ],
-      attrColumns: [
-        { field: 'code', title: '件号', minWidth: 150, slots: { default: 'group' } },
-        { field: 'name', title: '属性组', minWidth: 140 },
-        { field: 'f', title: '属性字段', width: 120 },
-        { field: 'o', title: '旧值（基准快照）', minWidth: 140, slots: { default: 'old' } },
-        { field: 'n', title: '新值（回传版本）', minWidth: 140, slots: { default: 'new' } },
-        { field: 'path', title: '所属 BOMLine 路径', minWidth: 180 }
       ]
     }
   },
@@ -499,26 +508,19 @@ export default {
   },
   watch: {
     displayBaseTree: function () {
-      this.$nextTick(this.syncTreeExpand)
+      this.syncTreeExpand()
     },
     displayRetTree: function () {
-      this.$nextTick(this.syncTreeExpand)
+      this.syncTreeExpand()
     }
   },
   mounted: function () {
-    this.updateTableHeight()
-    window.addEventListener('resize', this.updateTableHeight)
     this.runDiff()
   },
   beforeDestroy: function () {
-    window.removeEventListener('resize', this.updateTableHeight)
     if (this.toastTimer) clearTimeout(this.toastTimer)
   },
   methods: {
-    updateTableHeight: function () {
-      var el = this.$refs.treeBodyL
-      if (el) this.tableHeight = el.clientHeight || 360
-    },
     typeOf: function (code) {
       var d = this.diffMap[code]
       if (!d) return ''
@@ -539,15 +541,15 @@ export default {
       return true
     },
     filterTree: function (tree) {
-      if (!this.isFiltering) return tree
       var self = this
       function walk(nodes) {
         var out = []
         nodes.forEach(function (n) {
-          var children = n.children ? walk(n.children) : []
-          if (self.nodeMatches(n.code) || children.length) {
+          var children = n.children && n.children.length ? walk(n.children) : []
+          if (!self.isFiltering || self.nodeMatches(n.code) || children.length) {
             var copy = Object.assign({}, n)
             copy.children = children
+            copy.isLeaf = !children.length
             out.push(copy)
           }
         })
@@ -590,11 +592,11 @@ export default {
       }
       return ''
     },
-    rowClassNameL: function (params) {
-      return this.buildRowClass(params.row, 'L')
+    rowClassNameL: function (data) {
+      return this.buildRowClass(data, 'L')
     },
-    rowClassNameR: function (params) {
-      return this.buildRowClass(params.row, 'R')
+    rowClassNameR: function (data) {
+      return this.buildRowClass(data, 'R')
     },
     buildRowClass: function (row, side) {
       void this.rowClsTick
@@ -610,7 +612,7 @@ export default {
     },
     attrSpanMethod: function (params) {
       if (params.row && params.row._group) {
-        return params.columnIndex === 0 ? { rowspan: 1, colspan: 6 } : { rowspan: 0, colspan: 0 }
+        return params.columnIndex === 0 ? [1, 6] : [0, 0]
       }
     },
     runDiff: function () {
@@ -713,37 +715,17 @@ export default {
       this.diffDone = true
       this.selCode = null
       this.linkedCode = null
-      this.$nextTick(function () {
-        self.syncTreeExpand()
-        self.updateTableHeight()
-      })
+      this.syncTreeExpand()
       this.toast('对比完成：共 ' + diffList.length + ' 项差异（基准：下发快照 SNAP-CN-2026-0091）')
     },
     syncTreeExpand: function () {
-      var l = this.$refs.tableL
-      var r = this.$refs.tableR
-      if (!l || !r) return
       if (this.isFiltering) {
-        l.setAllTreeExpand(true)
-        r.setAllTreeExpand(true)
+        this.expandedL = collectKeys(this.displayBaseTree, true)
+        this.expandedR = collectKeys(this.displayRetTree, true)
         return
       }
-      l.setAllTreeExpand(false)
-      r.setAllTreeExpand(false)
-      this.expandToLevel(l, this.displayBaseTree, 2)
-      this.expandToLevel(r, this.displayRetTree, 2)
-    },
-    expandToLevel: function (table, tree, level) {
-      var rows = []
-      ;(function walk(nodes, lv) {
-        (nodes || []).forEach(function (n) {
-          if (lv < level && n.children && n.children.length) {
-            rows.push(n)
-            walk(n.children, lv + 1)
-          }
-        })
-      })(tree, 0)
-      if (rows.length) table.setTreeExpand(rows, true)
+      this.expandedL = keysToLevel(this.displayBaseTree, 2)
+      this.expandedR = keysToLevel(this.displayRetTree, 2)
     },
     onTreeClickL: function (params) {
       this.onTreeClick(params, 'L')
@@ -751,33 +733,29 @@ export default {
     onTreeClickR: function (params) {
       this.onTreeClick(params, 'R')
     },
-    onTableScrollL: function (params) {
-      this.onTableScroll('L', params)
+    onTreeScrollL: function (params) {
+      this.onTreeScroll('L', params)
     },
-    onTableScrollR: function (params) {
-      this.onTableScroll('R', params)
+    onTreeScrollR: function (params) {
+      this.onTreeScroll('R', params)
     },
     onTreeClick: function (params, side) {
-      var row = params.row
+      var row = params && params.data
       if (!row) return
       this.selCode = row.code
       this.clickSide = side
       this.linkedCode = null
-      var other = this.$refs[side === 'L' ? 'tableR' : 'tableL']
-      var otherRow = other && other.getRowById(row.code)
+      var other = this.$refs[side === 'L' ? 'treeR' : 'treeL']
       var d = this.diffMap[row.code]
-      if (otherRow) {
+      if (other && other.hasNode(row.code)) {
         this.linkedCode = row.code
-        other.setCurrentRow(otherRow)
-        other.scrollToRow(otherRow)
+        other.scrollToKey(row.code)
       } else {
         var tree = side === 'L' ? this.baseTree : this.retTree
         var p = findParent(tree, row.code)
-        var parentRow = other && p ? other.getRowById(p) : null
-        if (parentRow) {
+        if (other && p && other.hasNode(p)) {
           this.linkedCode = p
-          other.setCurrentRow(parentRow)
-          other.scrollToRow(parentRow)
+          other.scrollToKey(p)
         }
         var hint = '另一侧无匹配节点（已定位其父节点）'
         if (d && d.type === 'add') hint = '该节点为回传新增，基准快照中不存在（已定位其挂接父节点）'
@@ -795,17 +773,15 @@ export default {
       }).join('<br>')
       this.toast(txt, false, 4000)
     },
-    onTableScroll: function (side, params) {
+    onTreeScroll: function (side, params) {
       if (!this.syncScroll || this.scrollLock || (params && params.isY === false)) return
       this.scrollLock = true
-      var other = this.$refs[side === 'L' ? 'tableR' : 'tableL']
-      var table = other && other.getTable()
-      if (table && table.$el) {
-        var body = table.$el.querySelector('.vxe-table--body-inner-wrapper') ||
-          table.$el.querySelector('.vxe-table--body-wrapper')
-        var max = body ? (body.scrollHeight - body.clientHeight || 1) : 1
+      var other = this.$refs[side === 'L' ? 'treeR' : 'treeL']
+      var el = other && other.getScrollEl()
+      if (el) {
+        var max = el.scrollHeight - el.clientHeight || 1
         var p = params.scrollTop / (params.scrollHeight - params.bodyHeight || 1)
-        other.scrollTo(null, p * max)
+        other.scrollTo(p * max)
       }
       var self = this
       this.$nextTick(function () { self.scrollLock = false })
@@ -928,9 +904,7 @@ export default {
   padding: 3px 10px;
   font-size: 12px;
 }
-.snapshot-chip b {
-  font-family: Consolas, monospace;
-}
+.snapshot-chip b { font-family: Consolas, monospace; }
 .vsel {
   display: flex;
   align-items: center;
@@ -938,10 +912,7 @@ export default {
   font-size: 12px;
   color: var(--ink2);
 }
-.vsel .lock {
-  color: var(--c-rep);
-  font-size: 11px;
-}
+.vsel .lock { color: var(--c-rep); font-size: 11px; }
 .btn-primary {
   background: var(--accent) !important;
   border-color: var(--accent) !important;
@@ -958,16 +929,8 @@ export default {
   flex-wrap: wrap;
   flex-shrink: 0;
 }
-.legend {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.lg-title {
-  font-weight: 700;
-  font-size: 12px;
-}
+.legend { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.lg-title { font-weight: 700; font-size: 12px; }
 .lg {
   display: flex;
   align-items: center;
@@ -988,11 +951,7 @@ export default {
 .lg-chg { background: var(--bg-chg); border-color: var(--c-chg) !important; }
 .lg-rev { background: var(--bg-rev); border-color: var(--c-rev) !important; }
 .lg-rep { background: var(--bg-rep); border-color: var(--c-rep) !important; }
-.sep {
-  width: 1px;
-  height: 18px;
-  background: var(--line);
-}
+.sep { width: 1px; height: 18px; background: var(--line); }
 .type-filter {
   display: flex;
   align-items: center;
@@ -1000,11 +959,7 @@ export default {
   font-size: 12px;
   color: var(--ink2);
 }
-.hint {
-  font-size: 11px;
-  color: var(--ink2);
-  margin-left: auto;
-}
+.hint { font-size: 11px; color: var(--ink2); margin-left: auto; }
 
 .stats {
   display: flex;
@@ -1021,22 +976,10 @@ export default {
   align-items: baseline;
   gap: 6px;
 }
-.stat .n {
-  font-size: 18px;
-  font-weight: 800;
-  font-family: Consolas, monospace;
-}
-.stat .t {
-  font-size: 11px;
-  color: var(--ink2);
-}
-.stat.total {
-  background: var(--ink);
-  color: #fff;
-}
-.stat.total .t {
-  color: #cfd6e0;
-}
+.stat .n { font-size: 18px; font-weight: 800; font-family: Consolas, monospace; }
+.stat .t { font-size: 11px; color: var(--ink2); }
+.stat.total { background: var(--ink); color: #fff; }
+.stat.total .t { color: #cfd6e0; }
 
 .pbom-main {
   flex: 1;
@@ -1062,19 +1005,9 @@ export default {
   align-items: center;
   flex-shrink: 0;
 }
-.treehead .side {
-  font-weight: 700;
-  font-size: 13px;
-}
-.treehead .rev {
-  font-family: Consolas, monospace;
-  font-size: 11px;
-  color: #f5c9a0;
-}
-.tree-body {
-  flex: 1;
-  min-height: 0;
-}
+.treehead .side { font-weight: 700; font-size: 13px; }
+.treehead .rev { font-family: Consolas, monospace; font-size: 11px; color: #f5c9a0; }
+.tree-body { flex: 1; min-height: 0; }
 
 .bottom {
   height: 270px;
@@ -1086,19 +1019,13 @@ export default {
   margin: 0 16px 8px;
   overflow: hidden;
 }
-.btabs {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
+.btabs { height: 100%; display: flex; flex-direction: column; }
 .btabs >>> .el-tabs__header {
   margin: 0;
   background: #fffdf8;
   border-bottom: 1.5px solid var(--ink);
 }
-.btabs >>> .el-tabs__nav-wrap::after {
-  display: none;
-}
+.btabs >>> .el-tabs__nav-wrap::after { display: none; }
 .btabs >>> .el-tabs__item {
   height: 32px;
   line-height: 32px;
@@ -1106,35 +1033,14 @@ export default {
   font-weight: 600;
   color: var(--ink2);
 }
-.btabs >>> .el-tabs__item.is-active {
-  background: var(--ink);
-  color: #fff;
-}
-.btabs >>> .el-tabs__active-bar {
-  display: none;
-}
-.btabs >>> .el-tabs__content {
-  flex: 1;
-  overflow: auto;
-  padding: 8px 12px;
-}
-.btabs >>> .el-tab-pane {
-  height: 100%;
-}
+.btabs >>> .el-tabs__item.is-active { background: var(--ink); color: #fff; }
+.btabs >>> .el-tabs__active-bar { display: none; }
+.btabs >>> .el-tabs__content { flex: 1; overflow: auto; padding: 8px 12px; }
+.btabs >>> .el-tab-pane { height: 100%; }
 
-.name-cell {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
-}
-.name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.name-extra {
-  font-size: 10px;
-}
+.name-cell { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+.name { overflow: hidden; text-overflow: ellipsis; }
+.name-extra { font-size: 10px; }
 .ex-rep { color: var(--c-rep); }
 .ex-mov { color: var(--c-mov); }
 .miss { color: #9aa3ad; }
@@ -1166,23 +1072,10 @@ export default {
   border-radius: 2px;
   padding: 0 5px;
 }
-.old {
-  color: var(--c-del);
-  text-decoration: line-through;
-  font-family: Consolas, monospace;
-}
-.new {
-  color: var(--c-add);
-  font-weight: 700;
-  font-family: Consolas, monospace;
-}
+.old { color: var(--c-del); text-decoration: line-through; font-family: Consolas, monospace; }
+.new { color: var(--c-add); font-weight: 700; font-family: Consolas, monospace; }
 .mono { font-family: Consolas, monospace; }
-.agroup {
-  font-weight: 700;
-  font-size: 11px;
-  color: var(--ink2);
-  letter-spacing: 1px;
-}
+.agroup { font-weight: 700; font-size: 11px; color: var(--ink2); letter-spacing: 1px; }
 .st-ok { color: var(--c-add); font-size: 11px; font-weight: 700; }
 .st-no { color: var(--c-del); font-size: 11px; font-weight: 700; }
 .st-wait { font-size: 11px; color: var(--ink2); }
@@ -1196,12 +1089,7 @@ export default {
   font-size: 12px;
   align-items: flex-start;
 }
-.logline .lt {
-  font-family: Consolas, monospace;
-  color: var(--ink2);
-  flex-shrink: 0;
-  font-size: 11px;
-}
+.logline .lt { font-family: Consolas, monospace; color: var(--ink2); flex-shrink: 0; font-size: 11px; }
 .badge {
   flex-shrink: 0;
   font-size: 10px;
@@ -1215,16 +1103,8 @@ export default {
 .b-warn { background: var(--accent); }
 .b-none { background: #9aa3ad; }
 
-.imp {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.impcard {
-  border: 1.5px solid var(--ink);
-  padding: 8px 14px;
-  min-width: 180px;
-}
+.imp { display: flex; gap: 10px; flex-wrap: wrap; }
+.impcard { border: 1.5px solid var(--ink); padding: 8px 14px; min-width: 180px; }
 .impcard h4 {
   font-size: 11px;
   color: var(--ink2);
@@ -1232,20 +1112,9 @@ export default {
   border-bottom: 1px solid var(--line);
   padding-bottom: 3px;
 }
-.impcard ul {
-  margin: 0;
-  padding: 0;
-}
-.impcard li {
-  font-size: 12px;
-  margin: 3px 0 3px 14px;
-}
-.impcard .num {
-  font-family: Consolas, monospace;
-  font-weight: 800;
-  color: var(--accent);
-  font-size: 16px;
-}
+.impcard ul { margin: 0; padding: 0; }
+.impcard li { font-size: 12px; margin: 3px 0 3px 14px; }
+.impcard .num { font-family: Consolas, monospace; font-weight: 800; color: var(--accent); font-size: 16px; }
 
 #toast {
   position: fixed;
@@ -1264,31 +1133,32 @@ export default {
 #toast >>> .old { color: #ff8a80; text-decoration: line-through; font-family: Consolas, monospace; }
 #toast >>> .new { color: #69f0ae; font-weight: 700; font-family: Consolas, monospace; }
 
-.pbom-page >>> .vxe-header--column {
-  background: #fffdf8 !important;
-  color: var(--ink2);
-  font-size: 11px;
-  font-weight: 700;
-}
-.pbom-page >>> .vxe-body--row.d-add { background: var(--bg-add); }
-.pbom-page >>> .vxe-body--row.d-del { background: var(--bg-del); }
-.pbom-page >>> .vxe-body--row.d-del .name { text-decoration: line-through; }
-.pbom-page >>> .vxe-body--row.d-mov { background: var(--bg-mov); }
-.pbom-page >>> .vxe-body--row.d-chg { background: var(--bg-chg); }
-.pbom-page >>> .vxe-body--row.d-rev { background: var(--bg-rev); }
-.pbom-page >>> .vxe-body--row.d-rep { background: var(--bg-rep); }
-.pbom-page >>> .vxe-body--row.is-sel {
+.pbom-page >>> .tree-row.d-add,
+.pbom-page >>> .el-tree-node__content.d-add { background: var(--bg-add); border-left-color: var(--c-add); }
+.pbom-page >>> .tree-row.d-del,
+.pbom-page >>> .el-tree-node__content.d-del { background: var(--bg-del); border-left-color: var(--c-del); }
+.pbom-page >>> .tree-row.d-del .name { text-decoration: line-through; }
+.pbom-page >>> .tree-row.d-mov,
+.pbom-page >>> .el-tree-node__content.d-mov { background: var(--bg-mov); border-left-color: var(--c-mov); }
+.pbom-page >>> .tree-row.d-chg,
+.pbom-page >>> .el-tree-node__content.d-chg { background: var(--bg-chg); border-left-color: var(--c-chg); }
+.pbom-page >>> .tree-row.d-rev,
+.pbom-page >>> .el-tree-node__content.d-rev { background: var(--bg-rev); border-left-color: var(--c-rev); }
+.pbom-page >>> .tree-row.d-rep,
+.pbom-page >>> .el-tree-node__content.d-rep { background: var(--bg-rep); border-left-color: var(--c-rep); }
+.pbom-page >>> .tree-row.is-sel,
+.pbom-page >>> .el-tree-node__content.is-sel {
   background: #fff7e6 !important;
   outline: 1.5px solid var(--accent);
 }
-.pbom-page >>> .vxe-body--row.is-linked {
+.pbom-page >>> .tree-row.is-linked,
+.pbom-page >>> .el-tree-node__content.is-linked {
   background: #eef7ff !important;
   outline: 1.5px solid var(--c-rev);
 }
-.pbom-page >>> .vxe-body--row.agroup-row {
-  background: #fffdf8;
-}
-.pbom-page >>> .vxe-table--border-line { border-color: var(--line); }
+
+.pbom-page >>> .el-table th { background: #fffdf8; color: var(--ink2); font-size: 11px; }
+.pbom-page >>> .el-table .agroup-row { background: #fffdf8; }
 .pbom-page >>> .el-checkbox { color: var(--ink2); font-size: 12px; }
 .pbom-page >>> .el-button--mini { padding: 4px 10px; font-weight: 600; }
 </style>
