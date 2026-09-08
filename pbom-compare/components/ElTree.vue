@@ -19,31 +19,36 @@
         @node-expand="$emit('node-expand', $event)"
         @node-collapse="$emit('node-collapse', $event)"
       >
-        <span
-          slot-scope="scope"
-          class="tree-row gridrow"
-          :class="resolveRowClass(scope.data)"
-          :style="gridStyle"
-          :data-code="scope.data[nodeKey]"
-        >
+        <template v-slot="{ node, data }">
           <span
-            v-for="col in columns"
-            :key="col.field"
-            :class="['cell', 'cell-' + col.field]"
+            class="tree-row gridrow"
+            :class="resolveRowClass(data)"
+            :style="gridStyle"
+            :data-code="nodeKeyOf(data)"
           >
-            <span v-if="col.treeNode" class="c1" :style="{ paddingLeft: indentLeft(scope.node) + 'px' }">
-              <span class="tw" @click.stop="toggleExpand(scope.node)">{{ expandIcon(scope.node) }}</span>
-              <slot :name="slotName(col)" v-bind="scope">
-                <render-cell v-if="col.render" :render="col.render" :scope="scope" />
-                <span v-else class="name">{{ formatCell(scope.data, col.field) }}</span>
+            <span
+              v-for="col in columns"
+              :key="col.field"
+              :class="['cell', `cell-${col.field}`]"
+            >
+              <span
+                v-if="col.treeNode"
+                class="c1"
+                :style="{ paddingLeft: `${indentLeft(node)}px` }"
+              >
+                <span class="tw" @click.stop="toggleExpand(node)">{{ expandIcon(node) }}</span>
+                <slot :name="slotName(col)" :node="node" :data="data">
+                  <render-cell v-if="col.render" :render="col.render" :scope="{ node, data }" />
+                  <span v-else class="name">{{ formatCell(data, col.field) }}</span>
+                </slot>
+              </span>
+              <slot v-else :name="slotName(col)" :node="node" :data="data">
+                <render-cell v-if="col.render" :render="col.render" :scope="{ node, data }" />
+                <span v-else>{{ formatCell(data, col.field) }}</span>
               </slot>
             </span>
-            <slot v-else :name="slotName(col)" v-bind="scope">
-              <render-cell v-if="col.render" :render="col.render" :scope="scope" />
-              <span v-else>{{ formatCell(scope.data, col.field) }}</span>
-            </slot>
           </span>
-        </span>
+        </template>
       </el-tree>
     </div>
   </div>
@@ -52,54 +57,43 @@
 <script>
 /**
  * 公共 el-tree 封装（Vue 2.x + Element UI）
- * 按列渲染树节点，左右对比树可复用；对外暴露展开、定位、滚动方法。
- * 列可配 render(h, scope) / slots，页面侧无需再写两套相同插槽。
+ * 按列渲染树节点，左右对比树可复用。
  */
-var RenderCell = {
+const ROW_MARK_CLASS = ['d-add', 'd-del', 'd-mov', 'd-chg', 'd-rev', 'd-rep', 'is-sel', 'is-linked']
+
+const RenderCell = {
   name: 'RenderCell',
   functional: true,
   props: {
     render: Function,
     scope: Object
   },
-  render: function (h, ctx) {
-    return ctx.props.render(h, ctx.props.scope)
-  }
+  render: (h, { props }) => props.render(h, props.scope)
 }
 
 export default {
   name: 'ElTree',
-  components: {
-    RenderCell: RenderCell
-  },
+  components: { RenderCell },
   props: {
     data: {
       type: Array,
-      default: function () {
-        return []
-      }
+      default: () => []
     },
     columns: {
       type: Array,
-      default: function () {
-        return []
-      }
+      default: () => []
     },
     nodeKey: {
       type: String,
       default: 'id'
     },
-    props: {
+    treeProps: {
       type: Object,
-      default: function () {
-        return {}
-      }
+      default: () => ({})
     },
     expandedKeys: {
       type: Array,
-      default: function () {
-        return []
-      }
+      default: () => []
     },
     currentKey: {
       type: [String, Number],
@@ -123,16 +117,18 @@ export default {
     }
   },
   computed: {
-    mergedProps: function () {
-      return Object.assign(
-        { children: 'children', label: 'name', isLeaf: 'isLeaf' },
-        this.props
-      )
+    mergedProps() {
+      return {
+        children: 'children',
+        label: 'name',
+        isLeaf: 'isLeaf',
+        ...this.treeProps
+      }
     },
-    gridStyle: function () {
-      var cols = (this.columns || []).map(function (c) {
-        if (c.width) return c.width + 'px'
-        if (c.minWidth) return 'minmax(' + c.minWidth + 'px, 1fr)'
+    gridStyle() {
+      const cols = (this.columns || []).map((col) => {
+        if (col.width) return `${col.width}px`
+        if (col.minWidth) return `minmax(${col.minWidth}px, 1fr)`
         return '1fr'
       })
       return { gridTemplateColumns: cols.join(' ') }
@@ -140,150 +136,129 @@ export default {
   },
   watch: {
     expandedKeys: {
-      handler: function () {
-        var self = this
-        this.$nextTick(function () {
-          self.applyExpandedKeys()
-          self.syncContentClass()
+      handler() {
+        this.$nextTick(() => {
+          this.applyExpandedKeys()
+          this.syncContentClass()
         })
       },
       deep: true
     },
-    currentKey: function (key) {
-      if (this.$refs.tree) this.$refs.tree.setCurrentKey(key || null)
-      var self = this
-      this.$nextTick(function () { self.syncContentClass() })
+    currentKey(key) {
+      this.$refs.tree?.setCurrentKey(key || null)
+      this.$nextTick(() => this.syncContentClass())
     },
     data: {
-      handler: function () {
-        var self = this
-        this.$nextTick(function () { self.syncContentClass() })
+      handler() {
+        this.$nextTick(() => this.syncContentClass())
       },
       deep: true
     }
   },
-  updated: function () {
+  updated() {
     this.syncContentClass()
   },
   methods: {
-    getTree: function () {
+    getTree() {
       return this.$refs.tree
     },
-    getNode: function (key) {
-      return this.$refs.tree ? this.$refs.tree.getNode(key) : null
+    getNode(key) {
+      return this.$refs.tree?.getNode(key) ?? null
     },
-    hasNode: function (key) {
-      return !!this.getNode(key)
+    hasNode(key) {
+      return Boolean(this.getNode(key))
     },
-    setCurrentKey: function (key) {
-      if (this.$refs.tree) this.$refs.tree.setCurrentKey(key || null)
+    nodeKeyOf(data) {
+      return data?.[this.nodeKey]
     },
-    toggleExpand: function (node) {
+    setCurrentKey(key) {
+      this.$refs.tree?.setCurrentKey(key || null)
+    },
+    toggleExpand(node) {
       if (!node || node.isLeaf) return
       node.expanded = !node.expanded
     },
-    expandIcon: function (node) {
+    expandIcon(node) {
       if (!node || node.isLeaf) return '·'
       return node.expanded ? '▼' : '▶'
     },
-    indentLeft: function (node) {
-      return ((node && node.level ? node.level : 1) - 1) * this.indent
+    indentLeft(node) {
+      return ((node?.level || 1) - 1) * this.indent
     },
-    slotName: function (col) {
-      return (col.slots && col.slots.default) || col.field
+    slotName(col) {
+      return col.slots?.default || col.field
     },
-    formatCell: function (row, field) {
+    formatCell(row, field) {
       if (!row || !field) return ''
-      var val = row[field]
-      return val === undefined || val === null || val === '' ? '' : val
+      const val = row[field]
+      return val == null || val === '' ? '' : val
     },
-    resolveRowClass: function (data) {
-      if (typeof this.rowClassName === 'function') return this.rowClassName(data)
-      return this.rowClassName || ''
+    resolveRowClass(data) {
+      return typeof this.rowClassName === 'function'
+        ? this.rowClassName(data)
+        : (this.rowClassName || '')
     },
-    applyExpandedKeys: function () {
-      var tree = this.$refs.tree
-      if (!tree || !tree.store) return
-      var map = tree.store.nodesMap || {}
-      var set = {}
-      ;(this.expandedKeys || []).forEach(function (k) { set[k] = true })
-      Object.keys(map).forEach(function (k) {
-        if (!map[k].isLeaf) map[k].expanded = !!set[k]
+    applyExpandedKeys(keys = this.expandedKeys) {
+      const map = this.$refs.tree?.store?.nodesMap
+      if (!map) return
+      const opened = new Set(keys || [])
+      Object.entries(map).forEach(([key, node]) => {
+        if (!node.isLeaf) node.expanded = opened.has(key)
       })
     },
-    expandAll: function (expand) {
-      var tree = this.$refs.tree
-      if (!tree || !tree.store) return
-      var map = tree.store.nodesMap || {}
-      var open = expand !== false
-      Object.keys(map).forEach(function (k) {
-        if (!map[k].isLeaf) map[k].expanded = open
+    expandAll(expand = true) {
+      const map = this.$refs.tree?.store?.nodesMap
+      if (!map) return
+      Object.values(map).forEach((node) => {
+        if (!node.isLeaf) node.expanded = expand
       })
     },
-    setExpandedKeys: function (keys) {
-      this.applyExpandedKeys()
-      if (keys) {
-        var tree = this.$refs.tree
-        if (!tree || !tree.store) return
-        var map = tree.store.nodesMap || {}
-        var set = {}
-        keys.forEach(function (k) { set[k] = true })
-        Object.keys(map).forEach(function (k) {
-          if (!map[k].isLeaf) map[k].expanded = !!set[k]
-        })
-      }
+    setExpandedKeys(keys) {
+      this.applyExpandedKeys(keys)
     },
-    scrollTo: function (top) {
+    scrollTo(top) {
       if (this.$refs.wrap) this.$refs.wrap.scrollTop = top
     },
-    getScrollEl: function () {
+    getScrollEl() {
       return this.$refs.wrap
     },
-    scrollToKey: function (key) {
-      var self = this
-      var node = this.getNode(key)
+    scrollToKey(key) {
+      const node = this.getNode(key)
       if (!node) return false
       this.expandParent(node)
       this.setCurrentKey(key)
-      this.$nextTick(function () {
-        var el = self.$refs.wrap && self.$refs.wrap.querySelector('[data-code="' + key + '"]')
-        if (el && el.scrollIntoView) el.scrollIntoView({ block: 'center', behavior: 'smooth' })
+      this.$nextTick(() => {
+        const el = this.$refs.wrap?.querySelector(`[data-code="${key}"]`)
+        el?.scrollIntoView({ block: 'center', behavior: 'smooth' })
       })
       return true
     },
-    expandParent: function (node) {
-      var p = node && node.parent
-      while (p && p.level > 0) {
-        p.expanded = true
-        p = p.parent
+    expandParent(node) {
+      let parent = node?.parent
+      while (parent && parent.level > 0) {
+        parent.expanded = true
+        parent = parent.parent
       }
     },
-    syncContentClass: function () {
+    syncContentClass() {
       if (!this.$el) return
-      var rows = this.$el.querySelectorAll('.tree-row')
-      Array.prototype.forEach.call(rows, function (row) {
-        var content = row.parentNode
-        while (content && content.className && String(content.className).indexOf('el-tree-node__content') === -1) {
-          content = content.parentNode
-        }
-        if (!content || !content.classList) return
-        ;['d-add', 'd-del', 'd-mov', 'd-chg', 'd-rev', 'd-rep', 'is-sel', 'is-linked'].forEach(function (c) {
-          content.classList.remove(c)
-        })
-        String(row.className).split(/\s+/).forEach(function (c) {
-          if (/^(d-add|d-del|d-mov|d-chg|d-rev|d-rep|is-sel|is-linked)$/.test(c)) content.classList.add(c)
-        })
+      this.$el.querySelectorAll('.tree-row').forEach((row) => {
+        const content = row.closest('.el-tree-node__content')
+        if (!content) return
+        content.classList.remove(...ROW_MARK_CLASS)
+        const marks = [...row.classList].filter((cls) => ROW_MARK_CLASS.includes(cls))
+        if (marks.length) content.classList.add(...marks)
       })
     },
-    onNodeClick: function (data, node, comp) {
-      this.$emit('node-click', { data: data, node: node, component: comp })
+    onNodeClick(data, node, component) {
+      this.$emit('node-click', { data, node, component })
     },
-    onScroll: function (e) {
-      var el = e.target
+    onScroll({ target }) {
+      const { scrollTop, scrollHeight, clientHeight } = target
       this.$emit('scroll', {
-        scrollTop: el.scrollTop,
-        scrollHeight: el.scrollHeight,
-        bodyHeight: el.clientHeight,
+        scrollTop,
+        scrollHeight,
+        bodyHeight: clientHeight,
         isY: true
       })
     }

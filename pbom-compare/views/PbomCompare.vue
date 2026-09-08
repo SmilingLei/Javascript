@@ -8,44 +8,56 @@
       <div class="vsel">
         <span>基准版本</span>
         <el-select v-model="selBase" size="mini" disabled>
-          <el-option label="Rev.B（下发快照）" value="revB" />
+          <el-option
+            v-for="opt in baseOptions"
+            :key="opt.value"
+            :label="opt.label"
+            :value="opt.value"
+          />
         </el-select>
         <span class="lock">🔒 锁定</span>
       </div>
       <div class="vsel">
         <span>对比版本</span>
         <el-select v-model="selTgt" size="mini">
-          <el-option label="工艺系统回传 RT-2026-0820-01" value="rt0820" />
-          <el-option label="Rev.C（升版后）" value="revC" />
+          <el-option
+            v-for="opt in targetOptions"
+            :key="opt.value"
+            :label="opt.label"
+            :value="opt.value"
+          />
         </el-select>
       </div>
-      <el-button type="warning" size="mini" class="btn-primary" @click="runDiff">执行对比</el-button>
-      <el-button size="mini" @click="simSecondReturn">模拟二次回传</el-button>
-      <el-button size="mini" @click="exportReport">导出报告</el-button>
+      <el-button
+        v-for="btn in headerActions"
+        :key="btn.key"
+        size="mini"
+        :type="btn.type"
+        :class="btn.className"
+        @click="btn.handler"
+      >
+        {{ btn.label }}
+      </el-button>
     </header>
 
     <div class="toolbar">
       <div class="legend">
         <span class="lg-title">图例：</span>
-        <span class="lg"><i class="lg-add"></i>新增</span>
-        <span class="lg"><i class="lg-del"></i>删除</span>
-        <span class="lg"><i class="lg-mov"></i>移动</span>
-        <span class="lg"><i class="lg-chg"></i>数量/属性变更</span>
-        <span class="lg"><i class="lg-rev"></i>版本变更</span>
-        <span class="lg"><i class="lg-rep"></i>替换</span>
+        <span v-for="item in legendItems" :key="item.key" class="lg">
+          <i :class="`lg-${item.key}`"></i>{{ item.label }}
+        </span>
       </div>
       <div class="sep"></div>
       <el-checkbox v-model="diffOnly">仅显示差异项</el-checkbox>
       <label class="type-filter">
         类型筛选
         <el-select v-model="typeFilter" size="mini" clearable placeholder="全部">
-          <el-option label="全部" value="" />
-          <el-option label="新增" value="add" />
-          <el-option label="删除" value="del" />
-          <el-option label="移动" value="mov" />
-          <el-option label="数量/属性变更" value="chg" />
-          <el-option label="版本变更" value="rev" />
-          <el-option label="替换" value="rep" />
+          <el-option
+            v-for="opt in typeFilters"
+            :key="opt.value || 'all'"
+            :label="opt.label"
+            :value="opt.value"
+          />
         </el-select>
       </label>
       <el-checkbox v-model="syncScroll" @change="onSyncChange">同步滚动</el-checkbox>
@@ -68,44 +80,23 @@
     </div>
 
     <main class="pbom-main">
-      <div class="treecol">
+      <div v-for="panel in treePanels" :key="panel.side" class="treecol">
         <div class="treehead">
-          <span class="side">◀ 基准：下发快照</span>
-          <span class="rev">SNAP-CN-2026-0091 · Rev.B · 2026-08-10</span>
+          <span class="side">{{ panel.title }}</span>
+          <span class="rev">{{ panel.rev }}</span>
         </div>
         <div class="tree-body">
           <el-tree-x
-            ref="treeL"
-            :data="displayBaseTree"
+            :ref="panel.ref"
+            :data="panel.data"
             :columns="treeColumns"
             node-key="code"
-            :expanded-keys="expandedL"
-            :current-key="currentKeyL"
-            :row-class-name="rowClassNameL"
+            :expanded-keys="panel.expandedKeys"
+            :current-key="panel.currentKey"
+            :row-class-name="panel.rowClassName"
             empty-text="暂无节点"
-            @node-click="onTreeClickL"
-            @scroll="onTreeScrollL"
-          />
-        </div>
-      </div>
-
-      <div class="treecol">
-        <div class="treehead">
-          <span class="side">对比：工艺系统回传</span>
-          <span class="rev">RT-2026-0820-01 · 2026-08-20</span>
-        </div>
-        <div class="tree-body">
-          <el-tree-x
-            ref="treeR"
-            :data="displayRetTree"
-            :columns="treeColumns"
-            node-key="code"
-            :expanded-keys="expandedR"
-            :current-key="currentKeyR"
-            :row-class-name="rowClassNameR"
-            empty-text="暂无节点"
-            @node-click="onTreeClickR"
-            @scroll="onTreeScrollR"
+            @node-click="(params) => onTreeClick(params, panel.side)"
+            @scroll="(params) => onTreeScroll(panel.side, params)"
           />
         </div>
       </div>
@@ -171,10 +162,10 @@
 
         <el-tab-pane label="协同日志（含二次回传）" name="log">
           <div class="log-wrap">
-            <div v-for="(l, idx) in logs" :key="idx" class="logline">
-              <span class="lt">{{ l.t }}</span>
-              <span class="badge" :class="l.badge">{{ l.tag }}</span>
-              <span>{{ l.txt }}</span>
+            <div v-for="(item, idx) in logs" :key="idx" class="logline">
+              <span class="lt">{{ item.t }}</span>
+              <span class="badge" :class="item.badge">{{ item.tag }}</span>
+              <span>{{ item.txt }}</span>
             </div>
           </div>
         </el-tab-pane>
@@ -190,10 +181,7 @@
             <div class="impcard">
               <h4>受影响技术文件</h4>
               <ul>
-                <li>燃烧室装配工艺规程 AP-CMB-012（Rev.B→C）</li>
-                <li>密封环图纸 TZ-CMB-0034（作废）</li>
-                <li>整体石墨密封环图纸 TZ-CMB-0034N（新编）</li>
-                <li>滑油系统装配卡 AC-LUB-006（增补）</li>
+                <li v-for="doc in impactDocs" :key="doc">{{ doc }}</li>
               </ul>
             </div>
             <div class="impcard">
@@ -216,11 +204,11 @@
 <script>
 import ElTree from '../components/ElTree.vue'
 
-var REPLACE_MAP = {
+const REPLACE_MAP = {
   'WS10-CMB-S03-001': 'WS10-CMB-S03-001N'
 }
 
-var TT_COLOR = {
+const TT_COLOR = {
   add: '#2e7d32',
   del: '#c62828',
   mov: '#7b1fa2',
@@ -229,7 +217,7 @@ var TT_COLOR = {
   rep: '#ef6c00'
 }
 
-var STAT_META = [
+const STAT_META = [
   { key: 'add', label: '新增', color: TT_COLOR.add },
   { key: 'del', label: '删除', color: TT_COLOR.del },
   { key: 'mov', label: '移动', color: TT_COLOR.mov },
@@ -238,125 +226,156 @@ var STAT_META = [
   { key: 'rep', label: '替换', color: TT_COLOR.rep }
 ]
 
-function flatten(tree) {
-  var out = []
-  ;(function walk(nodes, parent, level) {
-    nodes.forEach(function (n) {
-      out.push({ node: n, parent: parent, level: level })
-      if (n.children) walk(n.children, n.code, level + 1)
+const DIFF_TYPE_ALIAS = {
+  del: 'del',
+  add: 'add',
+  mov: 'mov',
+  rev: 'rev',
+  chg: 'chg',
+  'rep-old': 'rep',
+  'rep-new': 'rep'
+}
+
+const DIFF_TAG = {
+  add: '＋新增',
+  del: '－删除',
+  mov: '⇄移动',
+  rev: 'Rev↑',
+  chg: '✎变更'
+}
+
+const BASE_OPTIONS = [{ label: 'Rev.B（下发快照）', value: 'revB' }]
+const TARGET_OPTIONS = [
+  { label: '工艺系统回传 RT-2026-0820-01', value: 'rt0820' },
+  { label: 'Rev.C（升版后）', value: 'revC' }
+]
+const TYPE_FILTERS = [
+  { label: '全部', value: '' },
+  ...STAT_META.map(({ key, label }) => ({ label, value: key }))
+]
+const IMPACT_DOCS = [
+  '燃烧室装配工艺规程 AP-CMB-012（Rev.B→C）',
+  '密封环图纸 TZ-CMB-0034（作废）',
+  '整体石墨密封环图纸 TZ-CMB-0034N（新编）',
+  '滑油系统装配卡 AC-LUB-006（增补）'
+]
+
+const flatten = (tree) => {
+  const out = []
+  const walk = (nodes, parent = '', level = 0) => {
+    nodes.forEach((n) => {
+      out.push({ node: n, parent, level })
+      if (n.children?.length) walk(n.children, n.code, level + 1)
     })
-  })(tree, '', 0)
+  }
+  walk(tree)
   return out
 }
 
-function findNode(tree, code) {
-  var r = null
-  ;(function walk(nodes) {
-    nodes.forEach(function (n) {
-      if (n.code === code) r = n
-      if (n.children) walk(n.children)
-    })
-  })(tree)
-  return r
+const findNode = (tree, code) => {
+  for (const n of tree) {
+    if (n.code === code) return n
+    if (n.children?.length) {
+      const found = findNode(n.children, code)
+      if (found) return found
+    }
+  }
+  return null
 }
 
-function findParent(tree, code) {
-  var r = ''
-  ;(function walk(nodes, p) {
-    nodes.forEach(function (n) {
-      if (n.code === code) r = p
-      if (n.children) walk(n.children, n.code)
-    })
-  })(tree, '')
-  return r
+const findParent = (tree, code, parent = '') => {
+  for (const n of tree) {
+    if (n.code === code) return parent
+    if (n.children?.length) {
+      const found = findParent(n.children, code, n.code)
+      if (found !== '') return found
+    }
+  }
+  return ''
 }
 
-function collectKeys(tree, onlyParents) {
-  var keys = []
-  ;(function walk(nodes) {
-    (nodes || []).forEach(function (n) {
-      var hasCh = n.children && n.children.length
-      if (!onlyParents || hasCh) keys.push(n.code)
-      if (hasCh) walk(n.children)
+const collectKeys = (tree, onlyParents = false) => {
+  const keys = []
+  const walk = (nodes = []) => {
+    nodes.forEach((n) => {
+      const hasChildren = Boolean(n.children?.length)
+      if (!onlyParents || hasChildren) keys.push(n.code)
+      if (hasChildren) walk(n.children)
     })
-  })(tree)
+  }
+  walk(tree)
   return keys
 }
 
-function keysToLevel(tree, level) {
-  var keys = []
-  ;(function walk(nodes, lv) {
-    (nodes || []).forEach(function (n) {
-      if (lv < level && n.children && n.children.length) {
+const keysToLevel = (tree, level) => {
+  const keys = []
+  const walk = (nodes = [], lv = 0) => {
+    nodes.forEach((n) => {
+      if (lv < level && n.children?.length) {
         keys.push(n.code)
         walk(n.children, lv + 1)
       }
     })
-  })(tree, 0)
+  }
+  walk(tree)
   return keys
 }
 
-function createBaseTree() {
-  return [
-    { code: 'WS10-ENG-0000', name: 'WS10 涡扇发动机 整机', dwg: 'ZZ-WS10-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
-      { code: 'WS10-FAN-000', name: '风扇系统', dwg: 'ZP-FAN-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
-        { code: 'WS10-FAN-R01-001', name: '风扇叶片', dwg: 'TZ-FAN-0101', qty: 24, rev: 'A', mat: 'TC4(Ti-6Al-4V)', effSer: '0101-0150', effDate: '2026-01-01', pos: 'C01～C24', children: [] },
-        { code: 'WS10-FAN-C01-001', name: '风扇机匣', dwg: 'TZ-FAN-0201', qty: 1, rev: 'B', mat: 'TC4', effSer: '0101-0150', effDate: '2026-01-01', pos: 'A1', children: [] },
-        { code: 'WS10-FAN-A01-001', name: '附件机匣', dwg: 'TZ-FAN-0301', qty: 1, rev: 'A', mat: 'ZL114A', effSer: '0101-0150', effDate: '2026-01-01', pos: 'B2', children: [] }
-      ] },
-      { code: 'WS10-CMB-000', name: '燃烧室系统', dwg: 'ZP-CMB-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
-        { code: 'WS10-CMB-C01-001', name: '燃烧室机匣', dwg: 'TZ-CMB-0101', qty: 1, rev: 'B', mat: 'GH4169', effSer: '0101-0150', effDate: '2026-01-01', pos: 'A1', children: [] },
-        { code: 'WS10-CMB-S03-001', name: '燃烧室密封环', dwg: 'TZ-CMB-0301', qty: 2, rev: 'A', mat: 'GH3030', effSer: '0101-0150', effDate: '2026-01-01', pos: ['S1', 'S2'], children: [] },
-        { code: 'WS10-CMB-F01-016', name: '燃油喷嘴', dwg: 'TZ-CMB-0401', qty: 16, rev: 'B', mat: 'GH3536', effSer: '0101-0150', effDate: '2026-01-01', pos: 'P01～P16', children: [] }
-      ] },
-      { code: 'WS10-TUR-000', name: '涡轮系统', dwg: 'ZP-TUR-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
-        { code: 'WS10-TUR-B01-001', name: '涡轮叶片', dwg: 'TZ-TUR-0101', qty: 72, rev: 'A', mat: 'DD6单晶', effSer: '0101-0150', effDate: '2026-01-01', pos: 'T01～T72', children: [] },
-        { code: 'WS10-TUR-D01-001', name: '涡轮盘', dwg: 'TZ-TUR-0201', qty: 1, rev: 'B', mat: 'GH4169', effSer: '0101-0150', effDate: '2026-01-01', pos: 'A1', children: [] }
-      ] },
-      { code: 'WS10-TRN-000', name: '传动系统', dwg: 'ZP-TRN-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
-        { code: 'WS10-TRN-S01-002', name: '传动轴', dwg: 'TZ-TRN-0102', qty: 1, rev: 'A', mat: '40CrNiMoA', effSer: '0101-0150', effDate: '2026-01-01', pos: 'A1', children: [] }
-      ] },
-      { code: 'WS10-LUB-000', name: '滑油系统', dwg: 'ZP-LUB-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
-        { code: 'WS10-LUB-T01-001', name: '滑油箱', dwg: 'TZ-LUB-0101', qty: 1, rev: 'B', mat: '1Cr18Ni9Ti', effSer: '0101-0150', effDate: '2026-01-01', pos: 'L1', children: [] }
-      ] }
+const createBaseTree = () => ([
+  { code: 'WS10-ENG-0000', name: 'WS10 涡扇发动机 整机', dwg: 'ZZ-WS10-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
+    { code: 'WS10-FAN-000', name: '风扇系统', dwg: 'ZP-FAN-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
+      { code: 'WS10-FAN-R01-001', name: '风扇叶片', dwg: 'TZ-FAN-0101', qty: 24, rev: 'A', mat: 'TC4(Ti-6Al-4V)', effSer: '0101-0150', effDate: '2026-01-01', pos: 'C01～C24', children: [] },
+      { code: 'WS10-FAN-C01-001', name: '风扇机匣', dwg: 'TZ-FAN-0201', qty: 1, rev: 'B', mat: 'TC4', effSer: '0101-0150', effDate: '2026-01-01', pos: 'A1', children: [] },
+      { code: 'WS10-FAN-A01-001', name: '附件机匣', dwg: 'TZ-FAN-0301', qty: 1, rev: 'A', mat: 'ZL114A', effSer: '0101-0150', effDate: '2026-01-01', pos: 'B2', children: [] }
+    ] },
+    { code: 'WS10-CMB-000', name: '燃烧室系统', dwg: 'ZP-CMB-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
+      { code: 'WS10-CMB-C01-001', name: '燃烧室机匣', dwg: 'TZ-CMB-0101', qty: 1, rev: 'B', mat: 'GH4169', effSer: '0101-0150', effDate: '2026-01-01', pos: 'A1', children: [] },
+      { code: 'WS10-CMB-S03-001', name: '燃烧室密封环', dwg: 'TZ-CMB-0301', qty: 2, rev: 'A', mat: 'GH3030', effSer: '0101-0150', effDate: '2026-01-01', pos: ['S1', 'S2'], children: [] },
+      { code: 'WS10-CMB-F01-016', name: '燃油喷嘴', dwg: 'TZ-CMB-0401', qty: 16, rev: 'B', mat: 'GH3536', effSer: '0101-0150', effDate: '2026-01-01', pos: 'P01～P16', children: [] }
+    ] },
+    { code: 'WS10-TUR-000', name: '涡轮系统', dwg: 'ZP-TUR-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
+      { code: 'WS10-TUR-B01-001', name: '涡轮叶片', dwg: 'TZ-TUR-0101', qty: 72, rev: 'A', mat: 'DD6单晶', effSer: '0101-0150', effDate: '2026-01-01', pos: 'T01～T72', children: [] },
+      { code: 'WS10-TUR-D01-001', name: '涡轮盘', dwg: 'TZ-TUR-0201', qty: 1, rev: 'B', mat: 'GH4169', effSer: '0101-0150', effDate: '2026-01-01', pos: 'A1', children: [] }
+    ] },
+    { code: 'WS10-TRN-000', name: '传动系统', dwg: 'ZP-TRN-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
+      { code: 'WS10-TRN-S01-002', name: '传动轴', dwg: 'TZ-TRN-0102', qty: 1, rev: 'A', mat: '40CrNiMoA', effSer: '0101-0150', effDate: '2026-01-01', pos: 'A1', children: [] }
+    ] },
+    { code: 'WS10-LUB-000', name: '滑油系统', dwg: 'ZP-LUB-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
+      { code: 'WS10-LUB-T01-001', name: '滑油箱', dwg: 'TZ-LUB-0101', qty: 1, rev: 'B', mat: '1Cr18Ni9Ti', effSer: '0101-0150', effDate: '2026-01-01', pos: 'L1', children: [] }
     ] }
-  ]
-}
+  ] }
+])
 
-function createRetTree() {
-  return [
-    { code: 'WS10-ENG-0000', name: 'WS10 涡扇发动机 整机', dwg: 'ZZ-WS10-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
-      { code: 'WS10-FAN-000', name: '风扇系统', dwg: 'ZP-FAN-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
-        { code: 'WS10-FAN-R01-001', name: '风扇叶片', dwg: 'TZ-FAN-0101', qty: 24, rev: 'A', mat: 'TC4(Ti-6Al-4V)', effSer: '0101-0150', effDate: '2026-01-01', pos: 'C01～C24', children: [] },
-        { code: 'WS10-FAN-C01-001', name: '风扇机匣', dwg: 'TZ-FAN-0201', qty: 1, rev: 'B', mat: 'TC4', effSer: '0101-0150', effDate: '2026-01-01', pos: 'A1', children: [] }
-      ] },
-      { code: 'WS10-CMB-000', name: '燃烧室系统', dwg: 'ZP-CMB-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
-        { code: 'WS10-CMB-C01-001', name: '燃烧室机匣', dwg: 'TZ-CMB-0101', qty: 1, rev: 'B', mat: 'GH4738', effSer: '0101-0150', effDate: '2026-01-01', pos: 'A1', children: [] },
-        { code: 'WS10-CMB-F01-016', name: '燃油喷嘴', dwg: 'TZ-CMB-0401', qty: 20, rev: 'B', mat: 'GH3536', effSer: '0101-0180', effDate: '2026-01-01', pos: 'P01～P20', children: [] },
-        { code: 'WS10-CMB-I01-001', name: '点火电嘴支架', dwg: 'TZ-CMB-0501', qty: 2, rev: 'A', mat: 'GH3030', effSer: '0101-', effDate: '2026-08-01', pos: ['12点位', '3点位'], children: [] },
-        { code: 'WS10-CMB-S03-001N', name: '燃烧室密封环(整体石墨)', dwg: 'TZ-CMB-0301N', qty: 2, rev: 'A', mat: '柔性石墨', effSer: '0101-', effDate: '2026-08-01', pos: ['S1', 'S2'], children: [] }
-      ] },
-      { code: 'WS10-TUR-000', name: '涡轮系统', dwg: 'ZP-TUR-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
-        { code: 'WS10-TUR-B01-001', name: '涡轮叶片', dwg: 'TZ-TUR-0101', qty: 72, rev: 'B', mat: 'DD6单晶', effSer: '0101-0150', effDate: '2026-01-01', pos: 'T01～T72', children: [] },
-        { code: 'WS10-TUR-D01-001', name: '涡轮盘', dwg: 'TZ-TUR-0201', qty: 1, rev: 'B', mat: 'GH4169', effSer: '0101-0150', effDate: '2026-03-15', pos: 'A1', children: [] }
-      ] },
-      { code: 'WS10-TRN-000', name: '传动系统', dwg: 'ZP-TRN-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
-        { code: 'WS10-FAN-A01-001', name: '附件机匣', dwg: 'TZ-FAN-0301', qty: 1, rev: 'A', mat: 'ZL114A', effSer: '0101-0150', effDate: '2026-01-01', pos: 'B2', children: [] }
-      ] },
-      { code: 'WS10-LUB-000', name: '滑油系统', dwg: 'ZP-LUB-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
-        { code: 'WS10-LUB-T01-001', name: '滑油箱', dwg: 'TZ-LUB-0101', qty: 1, rev: 'B', mat: '1Cr18Ni9Ti', effSer: '0101-0150', effDate: '2026-01-01', pos: 'L1', children: [] },
-        { code: 'WS10-LUB-P01-001', name: '滑油泵', dwg: 'TZ-LUB-0201', qty: 1, rev: 'A', mat: 'ZL114A', effSer: '0101-', effDate: '2026-08-01', pos: 'L2', children: [] }
-      ] }
+const createRetTree = () => ([
+  { code: 'WS10-ENG-0000', name: 'WS10 涡扇发动机 整机', dwg: 'ZZ-WS10-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
+    { code: 'WS10-FAN-000', name: '风扇系统', dwg: 'ZP-FAN-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
+      { code: 'WS10-FAN-R01-001', name: '风扇叶片', dwg: 'TZ-FAN-0101', qty: 24, rev: 'A', mat: 'TC4(Ti-6Al-4V)', effSer: '0101-0150', effDate: '2026-01-01', pos: 'C01～C24', children: [] },
+      { code: 'WS10-FAN-C01-001', name: '风扇机匣', dwg: 'TZ-FAN-0201', qty: 1, rev: 'B', mat: 'TC4', effSer: '0101-0150', effDate: '2026-01-01', pos: 'A1', children: [] }
+    ] },
+    { code: 'WS10-CMB-000', name: '燃烧室系统', dwg: 'ZP-CMB-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
+      { code: 'WS10-CMB-C01-001', name: '燃烧室机匣', dwg: 'TZ-CMB-0101', qty: 1, rev: 'B', mat: 'GH4738', effSer: '0101-0150', effDate: '2026-01-01', pos: 'A1', children: [] },
+      { code: 'WS10-CMB-F01-016', name: '燃油喷嘴', dwg: 'TZ-CMB-0401', qty: 20, rev: 'B', mat: 'GH3536', effSer: '0101-0180', effDate: '2026-01-01', pos: 'P01～P20', children: [] },
+      { code: 'WS10-CMB-I01-001', name: '点火电嘴支架', dwg: 'TZ-CMB-0501', qty: 2, rev: 'A', mat: 'GH3030', effSer: '0101-', effDate: '2026-08-01', pos: ['12点位', '3点位'], children: [] },
+      { code: 'WS10-CMB-S03-001N', name: '燃烧室密封环(整体石墨)', dwg: 'TZ-CMB-0301N', qty: 2, rev: 'A', mat: '柔性石墨', effSer: '0101-', effDate: '2026-08-01', pos: ['S1', 'S2'], children: [] }
+    ] },
+    { code: 'WS10-TUR-000', name: '涡轮系统', dwg: 'ZP-TUR-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
+      { code: 'WS10-TUR-B01-001', name: '涡轮叶片', dwg: 'TZ-TUR-0101', qty: 72, rev: 'B', mat: 'DD6单晶', effSer: '0101-0150', effDate: '2026-01-01', pos: 'T01～T72', children: [] },
+      { code: 'WS10-TUR-D01-001', name: '涡轮盘', dwg: 'TZ-TUR-0201', qty: 1, rev: 'B', mat: 'GH4169', effSer: '0101-0150', effDate: '2026-03-15', pos: 'A1', children: [] }
+    ] },
+    { code: 'WS10-TRN-000', name: '传动系统', dwg: 'ZP-TRN-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
+      { code: 'WS10-FAN-A01-001', name: '附件机匣', dwg: 'TZ-FAN-0301', qty: 1, rev: 'A', mat: 'ZL114A', effSer: '0101-0150', effDate: '2026-01-01', pos: 'B2', children: [] }
+    ] },
+    { code: 'WS10-LUB-000', name: '滑油系统', dwg: 'ZP-LUB-000', qty: 1, rev: 'B', mat: '—', effSer: '—', effDate: '—', children: [
+      { code: 'WS10-LUB-T01-001', name: '滑油箱', dwg: 'TZ-LUB-0101', qty: 1, rev: 'B', mat: '1Cr18Ni9Ti', effSer: '0101-0150', effDate: '2026-01-01', pos: 'L1', children: [] },
+      { code: 'WS10-LUB-P01-001', name: '滑油泵', dwg: 'TZ-LUB-0201', qty: 1, rev: 'A', mat: 'ZL114A', effSer: '0101-', effDate: '2026-08-01', pos: 'L2', children: [] }
     ] }
-  ]
-}
+  ] }
+])
 
 export default {
   name: 'PbomCompare',
-  components: {
-    ElTreeX: ElTree
-  },
-  data: function () {
+  components: { ElTreeX: ElTree },
+  data() {
     return {
       selBase: 'revB',
       selTgt: 'rt0820',
@@ -376,6 +395,11 @@ export default {
       toastHtml: '',
       toastTimer: null,
       ttColor: TT_COLOR,
+      legendItems: STAT_META,
+      typeFilters: TYPE_FILTERS,
+      impactDocs: IMPACT_DOCS,
+      baseOptions: BASE_OPTIONS,
+      targetOptions: TARGET_OPTIONS,
       baseTree: createBaseTree(),
       retTree: createRetTree(),
       expandedL: [],
@@ -392,25 +416,55 @@ export default {
     }
   },
   computed: {
-    currentKeyL: function () {
+    headerActions() {
+      return [
+        { key: 'run', label: '执行对比', type: 'warning', className: 'btn-primary', handler: this.runDiff },
+        { key: 'second', label: '模拟二次回传', handler: this.simSecondReturn },
+        { key: 'export', label: '导出报告', handler: this.exportReport }
+      ]
+    },
+    currentKeyL() {
       return this.clickSide === 'L' ? this.selCode : this.linkedCode
     },
-    currentKeyR: function () {
+    currentKeyR() {
       return this.clickSide === 'R' ? this.selCode : this.linkedCode
     },
-    treeColumns: function () {
-      var self = this
+    treePanels() {
+      return [
+        {
+          side: 'L',
+          ref: 'treeL',
+          title: '◀ 基准：下发快照',
+          rev: 'SNAP-CN-2026-0091 · Rev.B · 2026-08-10',
+          data: this.displayBaseTree,
+          expandedKeys: this.expandedL,
+          currentKey: this.currentKeyL,
+          rowClassName: this.rowClassNameL
+        },
+        {
+          side: 'R',
+          ref: 'treeR',
+          title: '对比：工艺系统回传',
+          rev: 'RT-2026-0820-01 · 2026-08-20',
+          data: this.displayRetTree,
+          expandedKeys: this.expandedR,
+          currentKey: this.currentKeyR,
+          rowClassName: this.rowClassNameR
+        }
+      ]
+    },
+    treeColumns() {
       return [
         {
           field: 'name',
           title: '零组件名称（层级）',
           minWidth: 200,
           treeNode: true,
-          render: function (h, scope) {
-            var extra = self.nameExtra(scope.data)
+          render: (h, { data }) => {
+            const extra = this.nameExtra(data)
             return h('span', { class: 'name-cell' }, [
-              h('span', { class: 'name' }, scope.data.name),
-              extra ? h('span', { class: ['name-extra', 'ex-' + self.typeOf(scope.data.code)] }, extra) : null
+              h('span', { class: 'name' }, data.name),
+              extra ? h('span', { class: ['name-extra', `ex-${this.typeOf(data.code)}`] }, extra) : null
             ])
           }
         },
@@ -418,317 +472,269 @@ export default {
           field: 'dwg',
           title: '图号',
           width: 116,
-          render: function (h, scope) {
-            return h('span', { class: { miss: !scope.data.dwg } }, scope.data.dwg || '—')
-          }
+          render: (h, { data }) => h('span', { class: { miss: !data.dwg } }, data.dwg || '—')
         },
         { field: 'code', title: '件号', minWidth: 150 },
         {
           field: 'qty',
           title: '数量',
           width: 56,
-          render: function (h, scope) {
-            return h('span', '×' + scope.data.qty)
-          }
+          render: (h, { data }) => h('span', `×${data.qty}`)
         },
         {
           field: 'pos',
           title: '位置号',
           width: 98,
-          render: function (h, scope) {
-            return h('span', {
-              class: { miss: !scope.data.pos },
-              attrs: { title: self.posTitle(scope.data) }
-            }, self.fmtPos(scope.data))
-          }
+          render: (h, { data }) => h('span', {
+            class: { miss: !data.pos },
+            attrs: { title: this.posTitle(data) }
+          }, this.fmtPos(data))
         },
         {
           field: 'rev',
           title: '版本',
           width: 62,
-          render: function (h, scope) {
-            return h('span', { class: 'revtag' }, 'Rev.' + scope.data.rev)
-          }
+          render: (h, { data }) => h('span', { class: 'revtag' }, `Rev.${data.rev}`)
         },
         {
           field: 'diff',
           title: '差异',
           width: 88,
-          render: function (h, scope) {
-            var tag = self.diffTag(scope.data)
-            if (!tag) return null
-            return h('span', { class: ['dtag', 'tag-' + self.typeOf(scope.data.code)] }, tag)
+          render: (h, { data }) => {
+            const tag = this.diffTag(data)
+            return tag ? h('span', { class: ['dtag', `tag-${this.typeOf(data.code)}`] }, tag) : null
           }
         }
       ]
     },
-    isFiltering: function () {
-      return this.diffDone && (this.diffOnly || !!this.typeFilter)
+    isFiltering() {
+      return this.diffDone && (this.diffOnly || Boolean(this.typeFilter))
     },
-    displayBaseTree: function () {
+    displayBaseTree() {
       return this.filterTree(this.baseTree)
     },
-    displayRetTree: function () {
+    displayRetTree() {
       return this.filterTree(this.retTree)
     },
-    stats: function () {
-      var cnt = { add: 0, del: 0, mov: 0, chg: 0, rev: 0, rep: 0 }
-      this.diffList.forEach(function (r) {
-        if (cnt[r.cls] !== undefined) cnt[r.cls]++
+    stats() {
+      const cnt = { add: 0, del: 0, mov: 0, chg: 0, rev: 0, rep: 0 }
+      this.diffList.forEach(({ cls }) => {
+        if (cnt[cls] !== undefined) cnt[cls] += 1
       })
-      return Object.assign({ total: this.diffList.length }, cnt)
+      return { total: this.diffList.length, ...cnt }
     },
-    statItems: function () {
-      var s = this.stats
-      return STAT_META.map(function (m) {
-        return Object.assign({}, m, { count: s[m.key] })
-      })
+    statItems() {
+      return STAT_META.map((meta) => ({ ...meta, count: this.stats[meta.key] }))
     },
-    retNodeCount: function () {
+    retNodeCount() {
       return flatten(this.retTree).length
     },
-    attrRows: function () {
-      var mat = []
-      var line = []
-      var self = this
-      this.diffList.forEach(function (r) {
-        (r.changes || []).forEach(function (c, i) {
-          var rec = {
-            _id: r.code + '-' + c.f + '-' + i,
-            code: r.code,
-            name: r.name,
-            f: c.f,
-            o: c.o,
-            n: c.n,
-            path: findParent(self.retTree, r.code) || r.code
+    attrRows() {
+      const mat = []
+      const line = []
+      this.diffList.forEach((row) => {
+        (row.changes || []).forEach((change, i) => {
+          const rec = {
+            _id: `${row.code}-${change.f}-${i}`,
+            code: row.code,
+            name: row.name,
+            f: change.f,
+            o: change.o,
+            n: change.n,
+            path: findParent(this.retTree, row.code) || row.code
           }
-          if (c.g === 'mat') mat.push(rec)
-          else line.push(rec)
+          ;(change.g === 'mat' ? mat : line).push(rec)
         })
       })
-      var rows = []
-      if (mat.length) {
-        rows.push({ _id: 'g-mat', _group: true, title: '—— 物料属性 ——' })
-        rows = rows.concat(mat)
-      }
-      if (line.length) {
-        rows.push({ _id: 'g-line', _group: true, title: '—— BOMLine 引用属性 ——' })
-        rows = rows.concat(line)
-      }
+      const rows = []
+      if (mat.length) rows.push({ _id: 'g-mat', _group: true, title: '—— 物料属性 ——' }, ...mat)
+      if (line.length) rows.push({ _id: 'g-line', _group: true, title: '—— BOMLine 引用属性 ——' }, ...line)
       return rows
     },
-    affectedSys: function () {
-      var map = {}
-      var self = this
-      this.diffList.forEach(function (r) {
-        var p = findParent(self.retTree, r.code) || findParent(self.baseTree, r.code)
-        if (p) map[p] = (map[p] || 0) + 1
-      })
-      return map
+    affectedSys() {
+      return this.diffList.reduce((map, { code }) => {
+        const parent = findParent(this.retTree, code) || findParent(this.baseTree, code)
+        if (parent) map[parent] = (map[parent] || 0) + 1
+        return map
+      }, {})
     }
   },
   watch: {
-    displayBaseTree: function () {
+    displayBaseTree() {
       this.syncTreeExpand()
     },
-    displayRetTree: function () {
+    displayRetTree() {
       this.syncTreeExpand()
     }
   },
-  mounted: function () {
+  mounted() {
     this.runDiff()
   },
-  beforeDestroy: function () {
+  beforeDestroy() {
     if (this.toastTimer) clearTimeout(this.toastTimer)
   },
   methods: {
-    typeOf: function (code) {
-      var d = this.diffMap[code]
-      if (!d) return ''
-      var t = d.type
-      if (t === 'del') return 'del'
-      if (t === 'add') return 'add'
-      if (t === 'mov') return 'mov'
-      if (t === 'rev') return 'rev'
-      if (t === 'chg') return 'chg'
-      if (t === 'rep-old' || t === 'rep-new') return 'rep'
-      return 'chg'
+    getTreeRef(side) {
+      const ref = this.$refs[`tree${side}`]
+      return Array.isArray(ref) ? ref[0] : ref
     },
-    nodeMatches: function (code) {
+    typeOf(code) {
+      const type = this.diffMap[code]?.type
+      return DIFF_TYPE_ALIAS[type] || (type ? 'chg' : '')
+    },
+    nodeMatches(code) {
       if (!this.diffDone) return true
-      var t = this.typeOf(code)
-      if (this.diffOnly && !t) return false
-      if (this.typeFilter && t !== this.typeFilter) return false
+      const type = this.typeOf(code)
+      if (this.diffOnly && !type) return false
+      if (this.typeFilter && type !== this.typeFilter) return false
       return true
     },
-    filterTree: function (tree) {
-      var self = this
-      function walk(nodes) {
-        var out = []
-        nodes.forEach(function (n) {
-          var children = n.children && n.children.length ? walk(n.children) : []
-          if (!self.isFiltering || self.nodeMatches(n.code) || children.length) {
-            var copy = Object.assign({}, n)
-            copy.children = children
-            copy.isLeaf = !children.length
-            out.push(copy)
-          }
-        })
+    filterTree(tree) {
+      const walk = (nodes) => nodes.reduce((out, n) => {
+        const children = n.children?.length ? walk(n.children) : []
+        if (!this.isFiltering || this.nodeMatches(n.code) || children.length) {
+          out.push({ ...n, children, isLeaf: !children.length })
+        }
         return out
-      }
+      }, [])
       return walk(tree)
     },
-    nameExtra: function (row) {
-      var d = this.diffMap[row.code]
+    nameExtra({ code }) {
+      const d = this.diffMap[code]
       if (!d) return ''
-      if (d.type === 'rep-old') return '→ ' + d.newCode
-      if (d.type === 'rep-new') return '← ' + d.oldCode
+      if (d.type === 'rep-old') return `→ ${d.newCode}`
+      if (d.type === 'rep-new') return `← ${d.oldCode}`
       if (d.type === 'mov') {
-        return (d.from || '').replace('WS10-', '') + ' → ' + (d.to || '').replace('WS10-', '')
+        return `${(d.from || '').replace('WS10-', '')} → ${(d.to || '').replace('WS10-', '')}`
       }
       return ''
     },
-    diffTag: function (row) {
-      var t = this.typeOf(row.code)
-      var d = this.diffMap[row.code]
-      if (t === 'add') return '＋新增'
-      if (t === 'del') return '－删除'
-      if (t === 'mov') return '⇄移动'
-      if (t === 'rev') return 'Rev↑'
-      if (t === 'chg') return '✎变更'
-      if (t === 'rep') return d && d.type === 'rep-old' ? '⭮旧件' : '⭮新件'
+    diffTag(row) {
+      const type = this.typeOf(row.code)
+      if (DIFF_TAG[type]) return DIFF_TAG[type]
+      if (type === 'rep') return this.diffMap[row.code]?.type === 'rep-old' ? '⭮旧件' : '⭮新件'
       return ''
     },
-    fmtPos: function (n) {
-      if (!n.pos) return '—'
-      if (Object.prototype.toString.call(n.pos) === '[object Array]') {
-        if (n.pos.length <= 1) return '' + n.pos[0]
-        return n.pos[0] + ' +' + (n.pos.length - 1)
+    fmtPos({ pos } = {}) {
+      if (!pos) return '—'
+      if (Array.isArray(pos)) {
+        return pos.length <= 1 ? `${pos[0]}` : `${pos[0]} +${pos.length - 1}`
       }
-      return '' + n.pos
+      return `${pos}`
     },
-    posTitle: function (n) {
-      if (Object.prototype.toString.call(n.pos) === '[object Array]' && n.pos.length > 1) {
-        return '全部位置号：' + n.pos.join('、')
-      }
-      return ''
+    posTitle({ pos } = {}) {
+      return Array.isArray(pos) && pos.length > 1 ? `全部位置号：${pos.join('、')}` : ''
     },
-    rowClassNameL: function (data) {
+    rowClassNameL(data) {
       return this.buildRowClass(data, 'L')
     },
-    rowClassNameR: function (data) {
+    rowClassNameR(data) {
       return this.buildRowClass(data, 'R')
     },
-    buildRowClass: function (row, side) {
+    buildRowClass(row, side) {
       void this.rowClsTick
-      var t = this.typeOf(row.code)
-      var cls = []
-      if (t) cls.push('d-' + t)
+      const cls = []
+      const type = this.typeOf(row.code)
+      if (type) cls.push(`d-${type}`)
       if (row.code === this.selCode && this.clickSide === side) cls.push('is-sel')
       if (row.code === this.linkedCode && this.clickSide !== side) cls.push('is-linked')
       return cls.join(' ')
     },
-    attrRowClassName: function (params) {
-      return params.row && params.row._group ? 'agroup-row' : ''
+    attrRowClassName({ row }) {
+      return row?._group ? 'agroup-row' : ''
     },
-    attrSpanMethod: function (params) {
-      if (params.row && params.row._group) {
-        return params.columnIndex === 0 ? [1, 6] : [0, 0]
-      }
+    attrSpanMethod({ row, columnIndex }) {
+      if (row?._group) return columnIndex === 0 ? [1, 6] : [0, 0]
     },
-    runDiff: function () {
-      var self = this
-      var diffMap = {}
-      var diffList = []
-      var flatB = flatten(this.baseTree)
-      var flatR = flatten(this.retTree)
-      var mapB = {}
-      var mapR = {}
-      flatB.forEach(function (r) { mapB[r.node.code] = r })
-      flatR.forEach(function (r) { mapR[r.node.code] = r })
+    runDiff() {
+      const diffMap = {}
+      const diffList = []
+      const flatB = flatten(this.baseTree)
+      const flatR = flatten(this.retTree)
+      const mapB = Object.fromEntries(flatB.map((r) => [r.node.code, r]))
+      const mapR = Object.fromEntries(flatR.map((r) => [r.node.code, r]))
 
-      flatB.forEach(function (rb) {
-        var b = rb.node
-        var code = b.code
+      flatB.forEach(({ node: b }) => {
+        const { code } = b
         if (!mapR[code]) {
           diffMap[code] = { type: 'del' }
           return
         }
-        var a = mapR[code].node
-        var d = { type: '', changes: [] }
-        var pB = findParent(self.baseTree, code)
-        var pR = findParent(self.retTree, code)
-        if (pB !== pR) {
+        const a = mapR[code].node
+        const d = { type: '', changes: [] }
+        const from = findParent(this.baseTree, code)
+        const to = findParent(this.retTree, code)
+        if (from !== to) {
           d.type = 'mov'
-          d.from = pB
-          d.to = pR
+          d.from = from
+          d.to = to
           diffMap[code] = d
         }
-        if (b.qty !== a.qty) d.changes.push({ g: 'line', f: '单件数量', o: b.qty, n: a.qty })
-        if (b.effSer !== a.effSer) d.changes.push({ g: 'line', f: '有效架次', o: b.effSer, n: a.effSer })
-        if (b.effDate !== a.effDate) d.changes.push({ g: 'line', f: '有效性日期', o: b.effDate, n: a.effDate })
+        const lineFields = [
+          ['qty', '单件数量'],
+          ['effSer', '有效架次'],
+          ['effDate', '有效性日期']
+        ]
+        lineFields.forEach(([key, label]) => {
+          if (b[key] !== a[key]) d.changes.push({ g: 'line', f: label, o: b[key], n: a[key] })
+        })
         if (b.mat !== a.mat) d.changes.push({ g: 'mat', f: '材料', o: b.mat, n: a.mat })
         if (b.name !== a.name) d.changes.push({ g: 'mat', f: '名称', o: b.name, n: a.name })
         if (b.rev !== a.rev) {
-          d.changes.push({ g: 'mat', f: '零组件版本', o: 'Rev.' + b.rev, n: 'Rev.' + a.rev })
+          d.changes.push({ g: 'mat', f: '零组件版本', o: `Rev.${b.rev}`, n: `Rev.${a.rev}` })
           if (!d.type) d.type = 'rev'
         }
         if (!d.type && d.changes.length) d.type = 'chg'
         if (d.type || d.changes.length) diffMap[code] = d
       })
 
-      flatR.forEach(function (rr) {
-        var a = rr.node
-        var code = a.code
+      flatR.forEach(({ node: a }) => {
+        const { code } = a
         if (mapB[code]) return
-        var oldCode = null
-        Object.keys(REPLACE_MAP).forEach(function (x) {
-          if (REPLACE_MAP[x] === code && diffMap[x] && diffMap[x].type === 'del') oldCode = x
-        })
+        const oldCode = Object.keys(REPLACE_MAP).find(
+          (x) => REPLACE_MAP[x] === code && diffMap[x]?.type === 'del'
+        )
         if (oldCode) {
-          delete diffMap[oldCode]
           diffMap[oldCode] = { type: 'rep-old', newCode: code }
-          diffMap[code] = { type: 'rep-new', oldCode: oldCode }
+          diffMap[code] = { type: 'rep-new', oldCode }
         } else {
           diffMap[code] = { type: 'add' }
         }
       })
 
-      flatB.concat(flatR).forEach(function (r) {
-        var d = diffMap[r.node.code]
+      const detailOf = (d, node) => {
+        const rec = { code: node.code, name: node.name, status: 'pending' }
+        const builders = {
+          del: () => ({ tt: '删除', cls: 'del', detail: '基准存在，回传不存在' }),
+          add: () => ({ tt: '新增', cls: 'add', detail: `回传新增挂接于 ${findParent(this.retTree, node.code)}` }),
+          mov: () => ({ tt: '移动', cls: 'mov', detail: `父节点 ${d.from} → ${d.to}` }),
+          'rep-old': () => ({
+            tt: '替换(旧件)',
+            cls: 'rep',
+            detail: `已被 ${d.newCode} 代用`,
+            name: findNode(this.baseTree, node.code)?.name || node.name
+          }),
+          'rep-new': () => ({
+            tt: '替换(新件)',
+            cls: 'rep',
+            detail: `代用 ${d.oldCode}（映射依据：CN-2026-0088 整体石墨密封改进）`
+          })
+        }
+        if (builders[d.type]) return { ...rec, ...builders[d.type]() }
+        return {
+          ...rec,
+          tt: d.type === 'rev' ? '版本变更' : '数量/属性变更',
+          cls: d.type === 'rev' ? 'rev' : 'chg',
+          detail: (d.changes || []).map((c) => `${c.f}: ${c.o} → ${c.n}`).join('；'),
+          changes: d.changes || []
+        }
+      }
+
+      ;[...flatB, ...flatR].forEach(({ node }) => {
+        const d = diffMap[node.code]
         if (!d || d.__listed) return
         d.__listed = true
-        var rec = { code: r.node.code, name: r.node.name, status: 'pending' }
-        if (d.type === 'del') {
-          rec.tt = '删除'
-          rec.cls = 'del'
-          rec.detail = '基准存在，回传不存在'
-        } else if (d.type === 'add') {
-          rec.tt = '新增'
-          rec.cls = 'add'
-          rec.detail = '回传新增挂接于 ' + findParent(self.retTree, r.node.code)
-        } else if (d.type === 'mov') {
-          rec.tt = '移动'
-          rec.cls = 'mov'
-          rec.detail = '父节点 ' + d.from + ' → ' + d.to
-        } else if (d.type === 'rep-old') {
-          rec.tt = '替换(旧件)'
-          rec.cls = 'rep'
-          rec.detail = '已被 ' + d.newCode + ' 代用'
-          rec.name = findNode(self.baseTree, r.node.code).name
-        } else if (d.type === 'rep-new') {
-          rec.tt = '替换(新件)'
-          rec.cls = 'rep'
-          rec.detail = '代用 ' + d.oldCode + '（映射依据：CN-2026-0088 整体石墨密封改进）'
-        } else {
-          rec.tt = d.type === 'rev' ? '版本变更' : '数量/属性变更'
-          rec.cls = d.type === 'rev' ? 'rev' : 'chg'
-          rec.detail = (d.changes || []).map(function (c) {
-            return c.f + ': ' + c.o + ' → ' + c.n
-          }).join('；')
-          rec.changes = d.changes || []
-        }
-        diffList.push(rec)
+        diffList.push(detailOf(d, node))
       })
 
       this.diffMap = diffMap
@@ -737,9 +743,9 @@ export default {
       this.selCode = null
       this.linkedCode = null
       this.syncTreeExpand()
-      this.toast('对比完成：共 ' + diffList.length + ' 项差异（基准：下发快照 SNAP-CN-2026-0091）')
+      this.toast(`对比完成：共 ${diffList.length} 项差异（基准：下发快照 SNAP-CN-2026-0091）`)
     },
-    syncTreeExpand: function () {
+    syncTreeExpand() {
       if (this.isFiltering) {
         this.expandedL = collectKeys(this.displayBaseTree, true)
         this.expandedR = collectKeys(this.displayRetTree, true)
@@ -748,73 +754,60 @@ export default {
       this.expandedL = keysToLevel(this.displayBaseTree, 2)
       this.expandedR = keysToLevel(this.displayRetTree, 2)
     },
-    onTreeClickL: function (params) {
-      this.onTreeClick(params, 'L')
-    },
-    onTreeClickR: function (params) {
-      this.onTreeClick(params, 'R')
-    },
-    onTreeScrollL: function (params) {
-      this.onTreeScroll('L', params)
-    },
-    onTreeScrollR: function (params) {
-      this.onTreeScroll('R', params)
-    },
-    onTreeClick: function (params, side) {
-      var row = params && params.data
+    onTreeClick({ data: row } = {}, side) {
       if (!row) return
       this.selCode = row.code
       this.clickSide = side
       this.linkedCode = null
-      var other = this.$refs[side === 'L' ? 'treeR' : 'treeL']
-      var d = this.diffMap[row.code]
-      if (other && other.hasNode(row.code)) {
+      const other = this.getTreeRef(side === 'L' ? 'R' : 'L')
+      const d = this.diffMap[row.code]
+      if (other?.hasNode(row.code)) {
         this.linkedCode = row.code
         other.scrollToKey(row.code)
       } else {
-        var tree = side === 'L' ? this.baseTree : this.retTree
-        var p = findParent(tree, row.code)
-        if (other && p && other.hasNode(p)) {
-          this.linkedCode = p
-          other.scrollToKey(p)
+        const tree = side === 'L' ? this.baseTree : this.retTree
+        const parentCode = findParent(tree, row.code)
+        if (other && parentCode && other.hasNode(parentCode)) {
+          this.linkedCode = parentCode
+          other.scrollToKey(parentCode)
         }
-        var hint = '另一侧无匹配节点（已定位其父节点）'
-        if (d && d.type === 'add') hint = '该节点为回传新增，基准快照中不存在（已定位其挂接父节点）'
-        else if (d && d.type === 'del') hint = '该节点在回传版本中已删除（已定位原父节点位置）'
-        else if (d && d.type === 'rep-old') hint = '旧件已被 ' + d.newCode + ' 替换（另一侧请查找橙色新件行）'
-        else if (d && d.type === 'rep-new') hint = '新件替换自 ' + d.oldCode + '（另一侧请查找橙色旧件行）'
-        this.toast(hint, true)
+        const hints = {
+          add: '该节点为回传新增，基准快照中不存在（已定位其挂接父节点）',
+          del: '该节点在回传版本中已删除（已定位原父节点位置）',
+          'rep-old': `旧件已被 ${d?.newCode} 替换（另一侧请查找橙色新件行）`,
+          'rep-new': `新件替换自 ${d?.oldCode}（另一侧请查找橙色旧件行）`
+        }
+        this.toast(hints[d?.type] || '另一侧无匹配节点（已定位其父节点）', true)
       }
-      this.rowClsTick++
-      if (d && d.changes && d.changes.length) this.showMiniCard(d)
+      this.rowClsTick += 1
+      if (d?.changes?.length) this.showMiniCard(d)
     },
-    showMiniCard: function (d) {
-      var txt = d.changes.map(function (c) {
-        return c.f + ': <span class="old">' + c.o + '</span> → <span class="new">' + c.n + '</span>'
-      }).join('<br>')
+    showMiniCard({ changes }) {
+      const txt = changes
+        .map((c) => `${c.f}: <span class="old">${c.o}</span> → <span class="new">${c.n}</span>`)
+        .join('<br>')
       this.toast(txt, false, 4000)
     },
-    onTreeScroll: function (side, params) {
-      if (!this.syncScroll || this.scrollLock || (params && params.isY === false)) return
+    onTreeScroll(side, params) {
+      if (!this.syncScroll || this.scrollLock || params?.isY === false) return
       this.scrollLock = true
-      var other = this.$refs[side === 'L' ? 'treeR' : 'treeL']
-      var el = other && other.getScrollEl()
+      const other = this.getTreeRef(side === 'L' ? 'R' : 'L')
+      const el = other?.getScrollEl()
       if (el) {
-        var max = el.scrollHeight - el.clientHeight || 1
-        var p = params.scrollTop / (params.scrollHeight - params.bodyHeight || 1)
+        const max = el.scrollHeight - el.clientHeight || 1
+        const p = params.scrollTop / (params.scrollHeight - params.bodyHeight || 1)
         other.scrollTo(p * max)
       }
-      var self = this
-      this.$nextTick(function () { self.scrollLock = false })
+      this.$nextTick(() => { this.scrollLock = false })
     },
-    onSyncChange: function (val) {
+    onSyncChange(val) {
       this.toast(val ? '同步滚动：开启（按百分比联动）' : '同步滚动：关闭（点击联动定位）')
     },
-    acceptDiff: function (row) {
+    acceptDiff(row) {
       this.$set(row, 'status', 'accepted')
       this.toast('差异已接受')
     },
-    rejectDiff: function (row) {
+    rejectDiff(row) {
       this.$set(row, 'status', 'rejected')
       this.logs.push({
         t: '2026-08-23 18:40',
@@ -824,43 +817,41 @@ export default {
       })
       this.toast('驳回需填写理由（演示）并已记入协同日志', true)
     },
-    simSecondReturn: function () {
-      this.secondReturnCount++
+    simSecondReturn() {
+      this.secondReturnCount += 1
       this.logs.push({
-        t: '2026-08-23 18:4' + this.secondReturnCount,
+        t: `2026-08-23 18:4${this.secondReturnCount}`,
         badge: 'b-none',
         tag: '二次回传',
-        txt: '工艺系统二次回传（批次 RT2-2026-0823-0' + this.secondReturnCount + '），仅涉及 1 条 BOMLine（燃油喷嘴 装配位置号 P12→P14）→ 已登记操作日志，未触发差异对比任务'
+        txt: `工艺系统二次回传（批次 RT2-2026-0823-0${this.secondReturnCount}），仅涉及 1 条 BOMLine（燃油喷嘴 装配位置号 P12→P14）→ 已登记操作日志，未触发差异对比任务`
       })
       this.activeTab = 'log'
       this.toast('二次回传已登记 · 未触发对比（差异基准仍为下发快照 SNAP-CN-2026-0091）', true, 5000)
     },
-    exportReport: function () {
-      var rows = this.diffList.map(function (r) {
-        return '<tr><td>' + r.tt + '</td><td>' + r.code + '</td><td>' + r.name + '</td><td>' + (r.detail || '') + '</td></tr>'
-      }).join('')
-      var html = '<html><head><meta charset="utf-8"><title>PBOM 对比报告</title>' +
-        '<style>body{font-family:"Microsoft YaHei";padding:30px;color:#1c2430}h1{font-size:18px;border-bottom:2px solid #1c2430;padding-bottom:6px}table{border-collapse:collapse;width:100%;font-size:12px;margin-top:14px}td,th{border:1px solid #999;padding:5px 8px;text-align:left}.meta{font-size:12px;color:#555;margin:10px 0}</style></head><body>' +
-        '<h1>PBOM 差异对比报告</h1>' +
-        '<div class="meta">基准：SNAP-CN-2026-0091（系统A下发快照，Rev.B，2026-08-10 14:32，不可变）<br>' +
-        '对比：RT-2026-0820-01（工艺系统回传，2026-08-20）<br>对比人：zhang_gy · 生成时间：' + new Date().toLocaleString() + ' · 差异合计：' + this.diffList.length + ' 项</div>' +
-        '<table><tr><th>类型</th><th>件号</th><th>名称</th><th>变更明细</th></tr>' + rows + '</table></body></html>'
-      var blob = new Blob([html], { type: 'text/html' })
-      var a = document.createElement('a')
-      a.href = URL.createObjectURL(blob)
+    exportReport() {
+      const rows = this.diffList
+        .map((r) => `<tr><td>${r.tt}</td><td>${r.code}</td><td>${r.name}</td><td>${r.detail || ''}</td></tr>`)
+        .join('')
+      const html = `<html><head><meta charset="utf-8"><title>PBOM 对比报告</title>
+<style>body{font-family:"Microsoft YaHei";padding:30px;color:#1c2430}h1{font-size:18px;border-bottom:2px solid #1c2430;padding-bottom:6px}table{border-collapse:collapse;width:100%;font-size:12px;margin-top:14px}td,th{border:1px solid #999;padding:5px 8px;text-align:left}.meta{font-size:12px;color:#555;margin:10px 0}</style></head><body>
+<h1>PBOM 差异对比报告</h1>
+<div class="meta">基准：SNAP-CN-2026-0091（系统A下发快照，Rev.B，2026-08-10 14:32，不可变）<br>
+对比：RT-2026-0820-01（工艺系统回传，2026-08-20）<br>对比人：zhang_gy · 生成时间：${new Date().toLocaleString()} · 差异合计：${this.diffList.length} 项</div>
+<table><tr><th>类型</th><th>件号</th><th>名称</th><th>变更明细</th></tr>${rows}</table></body></html>`
+      const a = document.createElement('a')
+      a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }))
       a.download = 'PBOM对比报告_SNAP-0091_vs_RT-0820.html'
       a.click()
       this.toast('报告已导出（HTML，可打印归档）')
     },
-    toast: function (msg, warn, dur) {
-      var self = this
-      this.toastWarn = !!warn
-      this.toastHtml = warn ? ('<span class="warn">⚠ ' + msg + '</span>') : msg
+    toast(msg, warn = false, dur = 2500) {
+      this.toastWarn = warn
+      this.toastHtml = warn ? `<span class="warn">⚠ ${msg}</span>` : msg
       this.toastVisible = true
       if (this.toastTimer) clearTimeout(this.toastTimer)
-      this.toastTimer = setTimeout(function () {
-        self.toastVisible = false
-      }, dur || 2500)
+      this.toastTimer = setTimeout(() => {
+        this.toastVisible = false
+      }, dur)
     }
   }
 }
