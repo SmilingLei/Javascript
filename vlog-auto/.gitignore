@@ -1,0 +1,8 @@
+.venv/
+raw/
+testraw/
+selected/
+shots.csv
+*.mp4
+*.mov
+__pycache__/
