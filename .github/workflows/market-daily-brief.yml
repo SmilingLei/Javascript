@@ -49,6 +49,10 @@ jobs:
 
       - name: 生成报告
         env:
+          YUQUE_TOKEN: ${{ secrets.YUQUE_TOKEN }}
+          YUQUE_NAMESPACE: ${{ secrets.YUQUE_NAMESPACE }}
+          YUQUE_BASE_URL: ${{ secrets.YUQUE_BASE_URL }}
+          YUQUE_PUBLIC: ${{ secrets.YUQUE_PUBLIC }}
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_BASE_URL: ${{ secrets.LLM_BASE_URL }}
           LLM_MODEL: ${{ secrets.LLM_MODEL }}

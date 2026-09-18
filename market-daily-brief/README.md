@@ -3,7 +3,8 @@
 每天自动做三件事：拉当天财经资讯、拉观察池里各标的的涨跌（当日 / 近1周 / 近1月 / 近3月）、
 把它们和沪深300（海外标的另外和本地基准）做对比，然后按公开规则给出**操作建议和理由**。
 
-输出是一份 Markdown 报告（存档到 `reports/`），可同时推送到微信 / 企业微信 / 飞书 / Telegram / 邮箱。
+输出是一份 Markdown 报告：存档到 `reports/`，同时**写入语雀知识库并推送微信**
+（企业微信 / 飞书 / Telegram / 邮箱也支持）。标题统一带日期和时间，如 `市场简报 2026-09-18 16:40`。
 不依赖任何付费数据源，也不需要 API Key 就能跑；配了 LLM Key 会额外生成一段综述。
 
 ## 快速开始
@@ -122,35 +123,74 @@ groups:
 
 组合层面按沪深300 的周期涨跌、趋势、区间分位，加上观察池涨跌家数，给出 2–8 成的仓位区间。
 
-## 推送
+## 推送与归档
 
-按环境变量自动启用，配了哪个就推哪个（IM 收到精简摘要，邮件收到完整 Markdown）：
+`--notify` 会把所有已配置的渠道一起推掉，配了哪个就推哪个，没配的跳过、互不影响。
+**语雀和邮件收完整 Markdown 报告，微信这类 IM 收精简摘要**（IM 有长度限制，塞全文会被截断）。
 
-| 渠道 | 环境变量 |
-| --- | --- |
-| Server酱（微信） | `SERVERCHAN_SENDKEY` |
-| 企业微信机器人 | `WECOM_WEBHOOK` |
-| 飞书机器人 | `FEISHU_WEBHOOK` |
-| Telegram | `TELEGRAM_BOT_TOKEN`、`TELEGRAM_CHAT_ID` |
-| 邮件 | `SMTP_HOST`、`SMTP_PORT`、`SMTP_USER`、`SMTP_PASSWORD`、`MAIL_TO`、`MAIL_FROM` |
+| 渠道 | 环境变量 | 收到的内容 |
+| --- | --- | --- |
+| 语雀 | `YUQUE_TOKEN`、`YUQUE_NAMESPACE` | 完整报告，存成知识库文档 |
+| Server酱（微信） | `SERVERCHAN_SENDKEY` | 摘要 |
+| 企业微信机器人 | `WECOM_WEBHOOK` | 摘要 |
+| 飞书机器人 | `FEISHU_WEBHOOK` | 摘要 |
+| Telegram | `TELEGRAM_BOT_TOKEN`、`TELEGRAM_CHAT_ID` | 摘要 |
+| 邮件 | `SMTP_HOST`、`SMTP_PORT`、`SMTP_USER`、`SMTP_PASSWORD`、`MAIL_TO`、`MAIL_FROM` | 完整报告 |
+
+标题统一为 **`市场简报 2026-09-18 16:40`**（日期 + 时间），微信推送和语雀文档标题一致。
 
 LLM 综述（可选，任何 OpenAI 兼容接口）：`LLM_API_KEY`、`LLM_BASE_URL`（默认 DeepSeek）、`LLM_MODEL`。
+
+### 写入语雀
+
+1. 到 <https://www.yuque.com/settings/tokens> 生成一个 Token（勾选知识库的读写权限）。
+2. 设两个环境变量即可：
+
+```bash
+export YUQUE_TOKEN=你的token
+export YUQUE_NAMESPACE=你的语雀用户名/market-brief   # 形如 login/repo-slug
+
+PYTHONPATH=src python -m mdbrief --notify
+```
+
+`YUQUE_NAMESPACE` 里的知识库**不存在时会自动创建**（名为「市场简报」，私密）。
+`login` 就是你语雀主页 URL 里的那一段，`repo-slug` 自己起一个英文短名。
+
+可选变量：
+
+| 变量 | 默认 | 说明 |
+| --- | --- | --- |
+| `YUQUE_PUBLIC` | `0` | 文档公开性，0 私密 / 1 公开 / 2 企业内公开 |
+| `YUQUE_BASE_URL` | `https://www.yuque.com/api/v2` | 空间版/专业版换成自己的域名 |
+| `YUQUE_CREATE_REPO` | `1` | 设为 `0` 则知识库不存在时直接报错，不自动建 |
+| `--yuque-slug` | `brief-<日期>-<场次>` | 手动指定文档路径 |
+
+关于文档数量：每天两个场次各一篇——A股收盘后那次是 `brief-2026-09-18-close`，
+美股收盘后（次日清晨）那次是 `brief-2026-09-18-overnight`。
+**同一场次重跑（比如失败重试、手动触发）会覆盖同一篇文档，不会刷出一堆重复文档。**
+想每次都新建，用 `--yuque-slug` 传一个带时间的路径即可。
+
+语雀 API 有个坑：通过 API 创建的文档默认不在知识库目录里，只能在「未归档」中看到。
+本项目会自动再调一次目录接口把它挂到根节点；万一挂载失败，文档本身已经写入成功，
+日志会提示去「未归档」找，不会因为这一步让整次推送失败。
 
 ## 每天自动跑
 
 ### 方式一：GitHub Actions（零成本，已配好）
 
 `.github/workflows/market-daily-brief.yml` 已经定时在北京时间 16:20（A股收盘后）和次日 06:30
-（美股收盘后）各跑一次，把报告提交回仓库并推送。只需在仓库 Settings → Secrets 里按需添加上面那些变量。
-也可以在 Actions 页面手动触发。
+（美股收盘后）各跑一次，把报告提交回仓库、写进语雀并推送微信。
+只需在仓库 Settings → Secrets and variables → Actions 里添加 `YUQUE_TOKEN`、`YUQUE_NAMESPACE`、
+`SERVERCHAN_SENDKEY` 这三个（其余渠道按需），也可以在 Actions 页面手动触发。
 
 注意：GitHub 的定时任务在高峰期会延迟几分钟到几十分钟，对日报场景无影响。
 
 ### 方式二：本机 cron
 
 ```bash
-# 工作日 16:20 生成并推送，日志留一份
+# 工作日 16:20 生成、写语雀、推微信，日志留一份
 20 16 * * 1-5 cd /path/to/market-daily-brief && \
+  YUQUE_TOKEN=xxx YUQUE_NAMESPACE=me/market-brief SERVERCHAN_SENDKEY=xxx \
   PYTHONPATH=src /usr/bin/python3 -m mdbrief --json --notify >> /tmp/mdbrief.log 2>&1
 ```
 
@@ -166,11 +206,12 @@ docker run --rm -v "$PWD:/app" -w /app -e PYTHONPATH=src \
 
 ```bash
 pip install pytest
-python -m pytest        # 31 个用例，全部离线，不打网络
+python -m pytest        # 43 个用例，全部离线，不打网络
 ```
 
 测试覆盖指标计算、Yahoo 昨收推导（含当日K线缺失、历史稀疏两种情况）、腾讯报文解析、
-规则引擎的各档动作、资讯去重与国内外分类、报告表格结构。
+规则引擎的各档动作、资讯去重与国内外分类、报告表格结构、语雀发布（新建/覆盖/自动建库/
+目录挂载降级/错误上抛）以及推送分发（微信收摘要、语雀收全文、单渠道失败不影响其他）。
 
 ## 已知局限
 

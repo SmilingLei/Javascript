@@ -24,7 +24,10 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument("--no-news", action="store_true", help="跳过资讯抓取（只看行情）")
     p.add_argument("--fresh-hours", type=int, default=36, help="只保留最近多少小时的资讯")
     p.add_argument("--llm", action="store_true", help="调用 LLM 生成综述（需 LLM_API_KEY）")
-    p.add_argument("--notify", action="store_true", help="按环境变量推送到已配置渠道")
+    p.add_argument("--notify", action="store_true",
+                   help="按环境变量推送到已配置渠道（语雀、微信、企微、飞书、Telegram、邮件）")
+    p.add_argument("--yuque-slug", default=None,
+                   help="指定语雀文档路径，默认 brief-<日期>-<场次>，同场次重跑会覆盖")
     p.add_argument("--json", dest="json_out", action="store_true", help="同时输出结构化 JSON")
     p.add_argument("--stdout", action="store_true", help="把 Markdown 打到标准输出")
     p.add_argument("--no-save", action="store_true", help="不写文件")
@@ -93,8 +96,9 @@ def main(argv: list[str] | None = None) -> int:
         sys.stdout.write(markdown)
 
     if args.notify:
-        title = f"市场简报 {brief.run_at:%m-%d}｜{brief.view.temperature if brief.view else ''}"
-        for channel, status in notify.notify_all(title, digest, markdown).items():
+        slug = args.yuque_slug or brief.doc_slug
+        for channel, status in notify.notify_all(brief.title, digest, markdown,
+                                                 yuque_slug=slug).items():
             log.info("推送 %s: %s", channel, status)
 
     if brief.errors:

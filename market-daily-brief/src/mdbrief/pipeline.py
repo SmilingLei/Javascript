@@ -38,6 +38,21 @@ class Brief:
         return f"{self.run_at:%Y-%m-%d}（{WEEKDAYS[self.run_at.weekday()]}）"
 
     @property
+    def title(self) -> str:
+        """推送与语雀文档共用的标题，带日期和时间。"""
+        return f"市场简报 {self.run_at:%Y-%m-%d %H:%M}"
+
+    @property
+    def session(self) -> str:
+        """A股收盘后跑的记为 close，美股收盘后（次日清晨）跑的记为 overnight。"""
+        return "overnight" if self.run_at.hour < 12 else "close"
+
+    @property
+    def doc_slug(self) -> str:
+        """同一天同一场次重跑会覆盖同一篇文档，而不是刷出多篇。"""
+        return f"brief-{self.run_at:%Y-%m-%d}-{self.session}"
+
+    @property
     def all_assessments(self) -> list[Assessment]:
         return self.cn_assessments + self.global_assessments
 

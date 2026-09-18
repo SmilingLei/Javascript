@@ -1,4 +1,4 @@
-"""推送：Server酱、企业微信、飞书、Telegram、邮件。按环境变量自动启用。"""
+"""推送：语雀、Server酱（微信）、企业微信、飞书、Telegram、邮件。按环境变量自动启用。"""
 
 from __future__ import annotations
 
@@ -8,6 +8,8 @@ import smtplib
 from email.message import EmailMessage
 
 import requests
+
+from . import yuque
 
 log = logging.getLogger(__name__)
 
@@ -90,12 +92,34 @@ CHANNELS = {
     "邮件": push_email,
 }
 
+# 邮件和语雀收完整 Markdown，IM 收精简摘要
+FULL_TEXT_CHANNELS = {"邮件", "语雀"}
 
-def notify_all(title: str, short: str, full: str) -> dict[str, str]:
-    """返回 {渠道: 状态}。短文本用于 IM，邮件用完整 Markdown。"""
+
+def publish_yuque(title: str, content: str, slug: str) -> str | None:
+    """写入语雀文档，返回文档链接；未配置则返回 None。"""
+    result = yuque.publish_markdown(title, slug, content)
+    if result is None:
+        return None
+    if not result.in_toc:
+        log.warning("语雀文档已写入但未挂进目录，可在知识库「未归档」中找到：%s", result.url)
+    return result.url
+
+
+def notify_all(title: str, short: str, full: str, *, yuque_slug: str | None = None) -> dict[str, str]:
+    """返回 {渠道: 状态}。语雀和邮件收完整报告，IM 收摘要。"""
     results: dict[str, str] = {}
+
+    if yuque_slug:
+        try:
+            url = publish_yuque(title, full, yuque_slug)
+            results["语雀"] = f"已写入 {url}" if url else "未配置"
+        except Exception as exc:  # noqa: BLE001
+            log.warning("语雀写入失败: %s", exc)
+            results["语雀"] = f"失败: {exc}"
+
     for name, sender in CHANNELS.items():
-        payload = full if name == "邮件" else short
+        payload = full if name in FULL_TEXT_CHANNELS else short
         try:
             results[name] = "已发送" if sender(title, payload) else "未配置"
         except Exception as exc:  # noqa: BLE001
