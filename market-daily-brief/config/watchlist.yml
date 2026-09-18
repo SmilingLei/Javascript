@@ -1,0 +1,161 @@
+# 观察列表：按分组维护，组内标的继承组的 market / provider / benchmark 设置。
+# provider: tencent(A股、港股实时) / yahoo(全球指数、个股)
+# benchmark: 引用 benchmarks 下的键，用于计算超额收益
+# history_symbol: 当主代码的历史K线数据稀疏时，用该代码计算区间涨跌（报告中会标注）
+
+benchmarks:
+  cn:
+    symbol: sh000300
+    name: 沪深300
+    provider: tencent
+  hk:
+    symbol: "^HSI"
+    name: 恒生指数
+    provider: yahoo
+  us:
+    symbol: "^GSPC"
+    name: 标普500
+    provider: yahoo
+
+# 报告中所有非A股标的额外再跟沪深300对比一次，便于做全球轮动判断
+cross_reference_benchmark: cn
+
+groups:
+  - name: 宽基指数
+    market: A股
+    provider: tencent
+    benchmark: cn
+    instruments:
+      - { symbol: sh510300, name: 沪深300ETF, keywords: [沪深300, 大盘, 权重股] }
+      - { symbol: sh510050, name: 上证50ETF, keywords: [上证50, 核心资产] }
+      - { symbol: sh510500, name: 中证500ETF, keywords: [中证500, 中盘] }
+      - { symbol: sh512100, name: 中证1000ETF, keywords: [中证1000, 小盘股, 微盘] }
+      - { symbol: sz159915, name: 创业板ETF, keywords: [创业板, 成长股] }
+      - { symbol: sh588000, name: 科创50ETF, keywords: [科创板, 科创50, 硬科技] }
+
+  - name: 科技成长
+    market: A股
+    provider: tencent
+    benchmark: cn
+    instruments:
+      - { symbol: sz159995, name: 芯片ETF, keywords: [芯片, 半导体, 晶圆, 存储, 光刻机, 国产替代] }
+      - { symbol: sh512480, name: 半导体ETF, keywords: [半导体, 设备, 封测, 先进制程] }
+      - { symbol: sh515070, name: 人工智能ETF, keywords: [人工智能, AI, 大模型, 算力, 英伟达, GPU] }
+      - { symbol: sz159852, name: 软件ETF, keywords: [软件, 信创, 国产操作系统, SaaS] }
+      - { symbol: sh515050, name: 5G通信ETF, keywords: [5G, 通信, 光模块, 运营商, 数据中心] }
+      - { symbol: sz159869, name: 游戏ETF, keywords: [游戏, 版号, 传媒, 短剧] }
+
+  - name: 高端制造
+    market: A股
+    provider: tencent
+    benchmark: cn
+    instruments:
+      - { symbol: sh515030, name: 新能源车ETF, keywords: [新能源车, 电动车, 锂电, 动力电池, 固态电池] }
+      - { symbol: sh515790, name: 光伏ETF, keywords: [光伏, 硅料, 组件, 逆变器] }
+      - { symbol: sh516160, name: 新能源ETF, keywords: [新能源, 储能, 风电, 绿电] }
+      - { symbol: sh512660, name: 军工ETF, keywords: [军工, 国防, 航空, 导弹, 军贸] }
+      - { symbol: sh562500, name: 机器人ETF, keywords: [机器人, 人形机器人, 减速器, 工业自动化] }
+      - { symbol: sz159611, name: 电力ETF, keywords: [电力, 电网, 火电, 水电, 电价] }
+
+  - name: 消费医药
+    market: A股
+    provider: tencent
+    benchmark: cn
+    instruments:
+      - { symbol: sz159928, name: 消费ETF, keywords: [消费, 社零, 消费复苏, 免税] }
+      - { symbol: sh512690, name: 酒ETF, keywords: [白酒, 茅台, 批价, 酒企] }
+      - { symbol: sh512170, name: 医疗ETF, keywords: [医疗, CXO, 医疗器械, 医保] }
+      - { symbol: sh512010, name: 医药ETF, keywords: [医药, 创新药, 集采, 生物医药, 出海授权] }
+      - { symbol: sz159865, name: 养殖ETF, keywords: [养殖, 猪价, 生猪, 饲料] }
+
+  - name: 金融周期
+    market: A股
+    provider: tencent
+    benchmark: cn
+    instruments:
+      - { symbol: sh512880, name: 证券ETF, keywords: [券商, 证券, 成交额, 并购, 投行] }
+      - { symbol: sh512800, name: 银行ETF, keywords: [银行, 净息差, 信贷, 存款利率] }
+      - { symbol: sh512400, name: 有色金属ETF, keywords: [有色, 铜, 铝, 稀土, 金属价格] }
+      - { symbol: sh515220, name: 煤炭ETF, keywords: [煤炭, 动力煤, 焦煤] }
+      - { symbol: sh512200, name: 房地产ETF, keywords: [房地产, 地产, 楼市, 房贷, 收储] }
+      - { symbol: sh518880, name: 黄金ETF, keywords: [黄金, 金价, 避险, 央行购金] }
+
+  - name: 红利防守
+    market: A股
+    provider: tencent
+    benchmark: cn
+    instruments:
+      - { symbol: sh510880, name: 红利ETF, keywords: [红利, 高股息, 分红] }
+      - { symbol: sh512890, name: 红利低波ETF, keywords: [红利低波, 低波动, 防守] }
+
+  - name: 跨境ETF
+    market: A股
+    provider: tencent
+    benchmark: cn
+    instruments:
+      - { symbol: sh513050, name: 中概互联网ETF, keywords: [中概股, 互联网, 腾讯, 阿里, 港股科技] }
+      - { symbol: sh513100, name: 纳指ETF, keywords: [纳斯达克, 美股, 科技股] }
+      - { symbol: sh513520, name: 日经ETF, keywords: [日经, 日本股市] }
+
+  - name: 港股
+    market: 港股
+    provider: yahoo
+    benchmark: hk
+    instruments:
+      - { symbol: "^HSI", name: 恒生指数, kind: 指数, keywords: [港股, 恒生指数, 南向资金] }
+      - { symbol: "^HSCE", name: 恒生中国企业指数, kind: 指数, keywords: [国企指数, 中资股] }
+      - { symbol: HSTECH.HK, name: 恒生科技指数, kind: 指数, history_symbol: 3033.HK, keywords: [恒生科技, 港股科技, 互联网] }
+
+  - name: 美股
+    market: 美股
+    provider: yahoo
+    benchmark: us
+    instruments:
+      - { symbol: "^GSPC", name: 标普500, kind: 指数, keywords: [标普500, 美股, 美联储, 降息] }
+      - { symbol: "^IXIC", name: 纳斯达克, kind: 指数, keywords: [纳斯达克, 科技股, 七巨头] }
+      - { symbol: "^DJI", name: 道琼斯, kind: 指数, keywords: [道琼斯] }
+      - { symbol: "^RUT", name: 罗素2000, kind: 指数, keywords: [罗素2000, 小盘股] }
+      - { symbol: "^SOX", name: 费城半导体, kind: 指数, keywords: [半导体, 费半, 英伟达, 台积电] }
+      - { symbol: "^VIX", name: VIX恐慌指数, kind: 指数, keywords: [VIX, 波动率, 避险] }
+
+  - name: 日韩台
+    market: 亚太
+    provider: yahoo
+    benchmark: us
+    instruments:
+      - { symbol: "^N225", name: 日经225, kind: 指数, keywords: [日经, 日本央行, 日元] }
+      - { symbol: "^KS11", name: 韩国综合指数, kind: 指数, keywords: [韩国, KOSPI, 三星, 海力士, 存储] }
+      - { symbol: "^TWII", name: 台湾加权指数, kind: 指数, keywords: [台股, 台积电, 电子代工] }
+
+  - name: 东南亚
+    market: 东南亚
+    provider: yahoo
+    benchmark: us
+    instruments:
+      - { symbol: "^SET.BK", name: 泰国SET指数, kind: 指数, history_symbol: THD, keywords: [泰国, 泰股, 泰铢, 旅游] }
+      - { symbol: "^STI", name: 新加坡海峡时报指数, kind: 指数, keywords: [新加坡, 海峡时报] }
+      - { symbol: "^JKSE", name: 印尼雅加达指数, kind: 指数, keywords: [印尼, 雅加达, 镍] }
+      - { symbol: "^KLSE", name: 马来西亚KLCI, kind: 指数, keywords: [马来西亚, 吉隆坡] }
+      - { symbol: VNM, name: 越南ETF(VNM), kind: ETF, keywords: [越南, 胡志明] }
+
+  - name: 欧洲
+    market: 欧洲
+    provider: yahoo
+    benchmark: us
+    instruments:
+      - { symbol: "^STOXX50E", name: 欧洲斯托克50, kind: 指数, keywords: [欧洲股市, 欧央行, ECB] }
+      - { symbol: "^FTSE", name: 英国富时100, kind: 指数, keywords: [英国, 富时100, 英央行] }
+      - { symbol: "^GDAXI", name: 德国DAX, kind: 指数, keywords: [德国, DAX, 制造业] }
+      - { symbol: "^FCHI", name: 法国CAC40, kind: 指数, keywords: [法国, CAC40, 奢侈品] }
+
+  # 不设 benchmark，超额列自动回落到 cross_reference_benchmark（沪深300），用于观察大类资产轮动
+  - name: 大类资产
+    market: 商品汇率
+    provider: yahoo
+    instruments:
+      - { symbol: "GC=F", name: COMEX黄金, kind: 商品, keywords: [黄金, 金价, 避险] }
+      - { symbol: "CL=F", name: WTI原油, kind: 商品, keywords: [原油, 油价, OPEC] }
+      - { symbol: "HG=F", name: COMEX铜, kind: 商品, keywords: [铜价, 铜, 需求] }
+      - { symbol: "DX-Y.NYB", name: 美元指数, kind: 汇率, keywords: [美元指数, 美元] }
+      - { symbol: "CNY=X", name: 美元离岸人民币, kind: 汇率, keywords: [人民币, 汇率, 贬值, 升值] }
+      - { symbol: "^TNX", name: 美债10年期收益率, kind: 利率, keywords: [美债, 收益率, 加息, 降息] }
