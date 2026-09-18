@@ -1,0 +1,102 @@
+"""命令行入口：python -m mdbrief [options]"""
+
+from __future__ import annotations
+
+import argparse
+import dataclasses
+import json
+import logging
+import sys
+from pathlib import Path
+
+from . import llm, notify, report
+from .config import PACKAGE_ROOT, load_config
+from .pipeline import build_brief
+
+
+def _parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(
+        prog="mdbrief",
+        description="每日 A股板块ETF + 全球市场简报：抓行情与资讯，对比沪深300，给出操作建议",
+    )
+    p.add_argument("--config", default=None, help="配置目录，默认 config/")
+    p.add_argument("--output-dir", default=str(PACKAGE_ROOT / "reports"), help="报告输出目录")
+    p.add_argument("--no-news", action="store_true", help="跳过资讯抓取（只看行情）")
+    p.add_argument("--fresh-hours", type=int, default=36, help="只保留最近多少小时的资讯")
+    p.add_argument("--llm", action="store_true", help="调用 LLM 生成综述（需 LLM_API_KEY）")
+    p.add_argument("--notify", action="store_true", help="按环境变量推送到已配置渠道")
+    p.add_argument("--json", dest="json_out", action="store_true", help="同时输出结构化 JSON")
+    p.add_argument("--stdout", action="store_true", help="把 Markdown 打到标准输出")
+    p.add_argument("--no-save", action="store_true", help="不写文件")
+    p.add_argument("-v", "--verbose", action="store_true")
+    return p
+
+
+def _to_jsonable(brief) -> dict:
+    def conv(obj):
+        if dataclasses.is_dataclass(obj):
+            return {k: conv(v) for k, v in dataclasses.asdict(obj).items()}
+        if isinstance(obj, dict):
+            return {str(k): conv(v) for k, v in obj.items()}
+        if isinstance(obj, (list, tuple)):
+            return [conv(v) for v in obj]
+        return obj
+
+    return {
+        "run_at": brief.run_at.isoformat(),
+        "data_date": brief.data_date,
+        "stale": brief.stale,
+        "benchmark": conv(brief.benchmark),
+        "view": conv(brief.view),
+        "cn": conv(brief.cn_assessments),
+        "global": conv(brief.global_assessments),
+        "news": conv(brief.news.items),
+        "errors": brief.errors,
+        "llm_summary": brief.llm_summary,
+    }
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = _parser().parse_args(argv)
+    logging.basicConfig(
+        level=logging.DEBUG if args.verbose else logging.INFO,
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    )
+    log = logging.getLogger("mdbrief")
+
+    config = load_config(args.config)
+    log.info("观察列表 %d 个标的，资讯源 %d 个",
+             len(config.instruments), sum(1 for s in config.news_sources if s.enabled))
+
+    brief = build_brief(config, skip_news=args.no_news, fresh_hours=args.fresh_hours)
+    if args.llm:
+        brief.llm_summary = llm.summarize(brief)
+
+    markdown = report.render_markdown(brief)
+    digest = report.render_digest(brief)
+
+    if not args.no_save:
+        out_dir = Path(args.output_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        stamp = brief.data_date or f"{brief.run_at:%Y-%m-%d}"
+        md_path = out_dir / f"{stamp}.md"
+        md_path.write_text(markdown, encoding="utf-8")
+        (out_dir / "latest.md").write_text(markdown, encoding="utf-8")
+        log.info("已写入 %s", md_path)
+        if args.json_out:
+            json_path = out_dir / f"{stamp}.json"
+            json_path.write_text(json.dumps(_to_jsonable(brief), ensure_ascii=False, indent=2),
+                                 encoding="utf-8")
+            log.info("已写入 %s", json_path)
+
+    if args.stdout or args.no_save:
+        sys.stdout.write(markdown)
+
+    if args.notify:
+        title = f"市场简报 {brief.run_at:%m-%d}｜{brief.view.temperature if brief.view else ''}"
+        for channel, status in notify.notify_all(title, digest, markdown).items():
+            log.info("推送 %s: %s", channel, status)
+
+    if brief.errors:
+        log.warning("本次有 %d 条数据告警", len(dict.fromkeys(brief.errors)))
+    return 0

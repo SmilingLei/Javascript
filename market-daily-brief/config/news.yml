@@ -1,0 +1,54 @@
+# 资讯源配置。weight 越高越优先出现在要闻里；limit 为单源抓取条数上限。
+# 任一源失败只会记录警告，不影响其他源和整份报告。
+
+sources:
+  # ---- 国内专业财经快讯 ----
+  - { id: cls, name: 财联社电报, enabled: true, limit: 60, region: 国内, weight: 5 }
+  - { id: ths, name: 同花顺快讯, enabled: true, limit: 40, region: 国内, weight: 4 }
+  - { id: wallstreetcn, name: 华尔街见闻, enabled: true, limit: 30, region: 全球, weight: 4 }
+  - { id: sina_7x24, name: 新浪财经7x24, enabled: true, limit: 40, region: 全球, weight: 3 }
+  - { id: sina_roll, name: 新浪财经要闻, enabled: true, limit: 25, region: 国内, weight: 3 }
+
+  # ---- 海外市场（英文源）----
+  - id: rss
+    name: CNBC市场
+    enabled: true
+    limit: 20
+    region: 美股
+    weight: 3
+    url: https://www.cnbc.com/id/100003114/device/rss/rss.html
+  - id: rss
+    name: Yahoo Finance
+    enabled: true
+    limit: 20
+    region: 美股
+    weight: 2
+    url: https://finance.yahoo.com/news/rssindex
+  - id: rss
+    name: Investing.com
+    enabled: true
+    limit: 20
+    region: 全球
+    weight: 2
+    url: https://www.investing.com/rss/news.rss
+
+  # ---- 分区域 Google News（可自由增删关键词）----
+  - { id: google_news, name: 港股要闻, enabled: true, limit: 12, region: 港股, weight: 3, query: 港股 恒生指数, hl: zh-CN, gl: HK, ceid: "HK:zh-Hans" }
+  - { id: google_news, name: 日本股市, enabled: true, limit: 10, region: 日本, weight: 2, query: 日本股市 日经指数, hl: zh-CN, gl: CN, ceid: "CN:zh-Hans" }
+  - { id: google_news, name: 韩国股市, enabled: true, limit: 10, region: 韩国, weight: 2, query: 韩国股市 KOSPI, hl: zh-CN, gl: CN, ceid: "CN:zh-Hans" }
+  - { id: google_news, name: 泰国股市, enabled: true, limit: 10, region: 泰国, weight: 2, query: 泰国股市 SET指数, hl: zh-CN, gl: CN, ceid: "CN:zh-Hans" }
+  - { id: google_news, name: 东南亚市场, enabled: true, limit: 10, region: 东南亚, weight: 2, query: 东南亚 股市 越南 印尼 新加坡, hl: zh-CN, gl: CN, ceid: "CN:zh-Hans" }
+  - { id: google_news, name: 欧洲市场, enabled: true, limit: 10, region: 欧洲, weight: 2, query: 欧洲股市 欧洲央行, hl: zh-CN, gl: CN, ceid: "CN:zh-Hans" }
+
+# 命中这些词的资讯会被判定为高影响宏观/政策消息，加权进入要闻并影响仓位建议
+macro_keywords:
+  政策货币: [降准, 降息, 加息, LPR, MLF, 逆回购, 流动性, 宽松, 缩表, 扩表, 国债买卖]
+  监管资本市场: [证监会, 交易所, 注册制, IPO, 减持, 回购, 平准基金, 中央汇金, 印花税, 融资融券]
+  宏观经济: [GDP, CPI, PPI, PMI, 社融, 出口, 进口, 失业率, 非农, 通胀, 经济数据, 国常会, 政治局会议, 中央经济工作会议]
+  外部风险: [关税, 制裁, 出口管制, 实体清单, 地缘, 冲突, 停火, 汇率, 贬值, 突发]
+  资金面: [北向资金, 南向资金, 主力资金, 成交额, 两融, ETF净流入, 外资]
+
+# 命中这些词视为利好/利空倾向，用于给板块打情绪分
+sentiment:
+  positive: [利好, 上调, 超预期, 增长, 回暖, 复苏, 大涨, 突破, 新高, 扩产, 中标, 签约, 补贴, 支持, 减税, 放宽, 涨价, 净流入, 回购, 增持]
+  negative: [利空, 下调, 不及预期, 下滑, 回落, 大跌, 新低, 亏损, 减产, 违约, 处罚, 调查, 限制, 禁令, 降价, 净流出, 减持, 退市, 爆仓]
