@@ -27,12 +27,37 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument("--notify", action="store_true",
                    help="按环境变量推送到已配置渠道（语雀、微信、企微、飞书、Telegram、邮件）")
     p.add_argument("--yuque-slug", default=None,
-                   help="指定语雀文档路径，默认 brief-<日期>-<场次>，同场次重跑会覆盖")
+                   help="指定语雀文档路径，默认 brief-{日期}-{场次}，同场次重跑会覆盖")
     p.add_argument("--json", dest="json_out", action="store_true", help="同时输出结构化 JSON")
     p.add_argument("--stdout", action="store_true", help="把 Markdown 打到标准输出")
     p.add_argument("--no-save", action="store_true", help="不写文件")
+    p.add_argument("--check", action="store_true",
+                   help="只自检推送渠道配置（会真的调一次语雀接口验证凭据），不生成报告")
     p.add_argument("-v", "--verbose", action="store_true")
     return p
+
+
+def _display_width(text: str) -> int:
+    """中日韩字符在终端里占两列，用它做对齐。"""
+    import unicodedata
+
+    return sum(2 if unicodedata.east_asian_width(ch) in "WF" else 1 for ch in text)
+
+
+def _check_channels() -> int:
+    rows = notify.check_channels()
+    width = max(_display_width(name) for name, _, _ in rows)
+    print("推送渠道自检：\n")
+    for name, ready, detail in rows:
+        padding = " " * (width - _display_width(name))
+        print(f"  [{'OK' if ready else '--'}] {name}{padding}  {detail}")
+    ready_names = [name for name, ready, _ in rows if ready]
+    print()
+    if ready_names:
+        print("可用渠道：" + "、".join(ready_names))
+        return 0
+    print("没有任何渠道就绪，报告仍会写到 reports/，但不会推送。配置方法见 README「推送与归档」。")
+    return 1
 
 
 def _to_jsonable(brief) -> dict:
@@ -66,6 +91,9 @@ def main(argv: list[str] | None = None) -> int:
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
     log = logging.getLogger("mdbrief")
+
+    if args.check:
+        return _check_channels()
 
     config = load_config(args.config)
     log.info("观察列表 %d 个标的，资讯源 %d 个",

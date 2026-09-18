@@ -149,9 +149,112 @@ def test_api_errors_are_surfaced():
         client(session).publish(title="t", slug="s", body="b")
 
 
+def test_publish_creates_repo_under_group_when_user_endpoint_rejects():
+    session = FakeSession({
+        ("GET", "/repos/team/market-brief"): FakeResponse(404, {}),
+        ("POST", "/users/team/repos"): FakeResponse(403, None, text="Forbidden"),
+        ("POST", "/groups/team/repos"): FakeResponse(200, {"data": {"id": 8}}),
+        ("GET", "/repos/team/market-brief/docs/s"): FakeResponse(404, {}),
+        ("POST", "/repos/team/market-brief/docs"): FakeResponse(200, {"data": {"id": 3}}),
+        ("PUT", "/repos/team/market-brief/toc"): FakeResponse(200, {"data": []}),
+    })
+    result = YuqueClient("tk", "team/market-brief", session=session).publish(
+        title="t", slug="s", body="b")
+
+    assert result.doc_id == 3
+    assert "/groups/team/repos" in session.paths("POST")
+
+
 def test_publish_markdown_is_noop_without_credentials(monkeypatch):
     from mdbrief import yuque
 
-    monkeypatch.delenv("YUQUE_TOKEN", raising=False)
-    monkeypatch.delenv("YUQUE_NAMESPACE", raising=False)
+    for var in ["YUQUE_TOKEN", "YUQUE_COOKIE", "YUQUE_NAMESPACE"]:
+        monkeypatch.delenv(var, raising=False)
     assert yuque.publish_markdown("t", "s", "b") is None
+
+    # 有 namespace 但没有任何凭据，同样不应该报错
+    monkeypatch.setenv("YUQUE_NAMESPACE", "me/market-brief")
+    assert yuque.publish_markdown("t", "s", "b") is None
+
+
+class CookieSession(FakeSession):
+    def request(self, method, url, headers=None, json=None, timeout=None):
+        path = url.split("/api", 1)[1]
+        self.calls.append((method, path, json))
+        assert headers["X-CSRF-Token"] == "ct0k3n"
+        assert headers["X-Requested-With"] == "XMLHttpRequest"
+        assert "yuque_ctoken=ct0k3n" in headers["Cookie"]
+        queue = self.routes.get((method, path))
+        if queue is None:
+            return FakeResponse(404, {"message": "Not Found"})
+        return queue.pop(0) if isinstance(queue, list) else queue
+
+
+COOKIE = "_yuque_session=abc; yuque_ctoken=ct0k3n"
+
+
+def test_cookie_mode_requires_ctoken():
+    from mdbrief.yuque import YuqueCookieClient
+
+    with pytest.raises(YuqueError, match="yuque_ctoken"):
+        YuqueCookieClient("_yuque_session=abc", "me/market-brief")
+
+
+def test_cookie_mode_creates_doc_in_matching_book():
+    from mdbrief.yuque import YuqueCookieClient
+
+    session = CookieSession({
+        ("GET", "/mine/books"): FakeResponse(200, {"data": [
+            {"id": 11, "slug": "notes"}, {"id": 22, "slug": "market-brief"}]}),
+        ("GET", "/docs/s?book_id=22&mode=markdown"): FakeResponse(404, {}),
+        ("POST", "/docs"): FakeResponse(200, {"data": {"id": 55, "slug": "s"}}),
+    })
+    result = YuqueCookieClient(COOKIE, "me/market-brief", session=session).publish(
+        title="市场简报 2026-09-18 16:40", slug="s", body="# 报告")
+
+    assert result.created is True and result.doc_id == 55
+    created = session.payload_of("POST", "/docs")
+    assert created["book_id"] == 22
+    assert created["format"] == "markdown"
+    assert created["body"] == created["body_draft"] == "# 报告"
+
+
+def test_cookie_mode_updates_then_publishes_existing_doc():
+    from mdbrief.yuque import YuqueCookieClient
+
+    session = CookieSession({
+        ("GET", "/mine/books"): FakeResponse(200, {"data": [{"id": 22, "slug": "market-brief"}]}),
+        ("GET", "/docs/s?book_id=22&mode=markdown"): FakeResponse(200, {"data": {"id": 55, "slug": "s"}}),
+        ("PUT", "/docs/55/content"): FakeResponse(200, {"data": {}}),
+        ("PUT", "/docs/55/publish"): FakeResponse(200, {"data": {}}),
+    })
+    result = YuqueCookieClient(COOKIE, "me/market-brief", session=session).publish(
+        title="t", slug="s", body="正文")
+
+    assert result.created is False
+    # 网页端接口要先写草稿再发布，少一步内容不会真正更新
+    assert session.paths("PUT") == ["/docs/55/content", "/docs/55/publish"]
+
+
+def test_cookie_mode_reports_missing_book():
+    from mdbrief.yuque import YuqueCookieClient
+
+    session = CookieSession({
+        ("GET", "/mine/books"): FakeResponse(200, {"data": [{"id": 11, "slug": "notes"}]}),
+    })
+    with pytest.raises(YuqueError, match="没找到"):
+        YuqueCookieClient(COOKIE, "me/market-brief", session=session).publish(
+            title="t", slug="s", body="b")
+
+
+def test_check_credentials_reports_state(monkeypatch):
+    from mdbrief import yuque
+
+    for var in ["YUQUE_TOKEN", "YUQUE_COOKIE", "YUQUE_NAMESPACE"]:
+        monkeypatch.delenv(var, raising=False)
+    ready, detail = yuque.check_credentials()
+    assert ready is False and "YUQUE_NAMESPACE" in detail
+
+    monkeypatch.setenv("YUQUE_NAMESPACE", "me/market-brief")
+    ready, detail = yuque.check_credentials()
+    assert ready is False and "YUQUE_TOKEN" in detail

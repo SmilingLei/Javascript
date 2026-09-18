@@ -18,16 +18,50 @@ def test_slug_separates_close_and_overnight_sessions():
     assert make_brief(6, 30).doc_slug == "brief-2026-09-18-overnight"
 
 
+ALL_VARS = ["SERVERCHAN_SENDKEY", "PUSHPLUS_TOKEN", "WECOM_WEBHOOK", "FEISHU_WEBHOOK",
+            "TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID", "SMTP_HOST", "SMTP_PORT", "MAIL_TO",
+            "SMTP_USER", "SMTP_PASSWORD", "YUQUE_TOKEN", "YUQUE_COOKIE", "YUQUE_NAMESPACE"]
+
+
 def test_notify_all_reports_unconfigured_channels(monkeypatch):
-    for var in ["SERVERCHAN_SENDKEY", "WECOM_WEBHOOK", "FEISHU_WEBHOOK", "TELEGRAM_BOT_TOKEN",
-                "TELEGRAM_CHAT_ID", "SMTP_HOST", "MAIL_TO", "SMTP_USER", "SMTP_PASSWORD",
-                "YUQUE_TOKEN", "YUQUE_NAMESPACE"]:
+    for var in ALL_VARS:
         monkeypatch.delenv(var, raising=False)
 
     results = notify.notify_all("市场简报 2026-09-18 16:40", "摘要", "# 全文", yuque_slug="brief-x")
     assert results["语雀"] == "未配置"
     assert results["Server酱"] == "未配置"
-    assert set(results) == {"语雀", "Server酱", "企业微信", "飞书", "Telegram", "邮件"}
+    assert set(results) == {"语雀", "Server酱", "PushPlus", "企业微信", "飞书", "Telegram", "邮件"}
+
+
+def test_serverchan_endpoint_detects_product_line():
+    # Turbo 的 key 以 SCT 开头，推微信
+    assert notify.serverchan_endpoint("SCT12345xyz") == "https://sctapi.ftqq.com/SCT12345xyz.send"
+    # Server酱³ 的 key 形如 sctp{uid}t...，域名里要带 uid
+    assert notify.serverchan_endpoint("sctp123tABC") == "https://123.push.ft07.com/send/sctp123tABC.send"
+
+
+def test_check_channels_lists_missing_variables(monkeypatch):
+    for var in ALL_VARS:
+        monkeypatch.delenv(var, raising=False)
+    rows = dict((name, (ready, detail)) for name, ready, detail in notify.check_channels())
+
+    assert rows["Server酱"][0] is False
+    assert "SERVERCHAN_SENDKEY" in rows["Server酱"][1]
+    assert rows["语雀"][0] is False
+    assert "YUQUE_NAMESPACE" in rows["语雀"][1]
+    assert "TELEGRAM_CHAT_ID" in rows["Telegram"][1]
+
+
+def test_check_channels_marks_configured(monkeypatch):
+    for var in ALL_VARS:
+        monkeypatch.delenv(var, raising=False)
+    monkeypatch.setenv("SERVERCHAN_SENDKEY", "SCTxxx")
+    monkeypatch.setattr(notify.yuque, "check_credentials", lambda: (True, "Token 有效（账号 me）"))
+
+    rows = dict((name, (ready, detail)) for name, ready, detail in notify.check_channels())
+    assert rows["Server酱"][0] is True
+    assert rows["语雀"] == (True, "Token 有效（账号 me）")
+    assert rows["PushPlus"][0] is False
 
 
 def test_wechat_gets_digest_and_yuque_gets_full_markdown(monkeypatch):

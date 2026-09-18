@@ -21,11 +21,34 @@ def _post(url: str, **kwargs) -> None:
     resp.raise_for_status()
 
 
+def serverchan_endpoint(key: str) -> str:
+    """Server酱有两条产品线，SendKey 前缀不同，接口域名也不同。
+
+    - Turbo（`SCT` 开头）推微信：https://sctapi.ftqq.com/<key>.send
+    - Server酱³（`sctp{uid}t...` 开头）推自有 App：https://<uid>.push.ft07.com/send/<key>.send
+    """
+    if key.startswith("sctp"):
+        uid = "".join(ch for ch in key[4:].split("t", 1)[0] if ch.isdigit())
+        if uid:
+            return f"https://{uid}.push.ft07.com/send/{key}.send"
+    return f"https://sctapi.ftqq.com/{key}.send"
+
+
 def push_serverchan(title: str, content: str) -> bool:
     key = os.getenv("SERVERCHAN_SENDKEY")
     if not key:
         return False
-    _post(f"https://sctapi.ftqq.com/{key}.send", data={"title": title[:100], "desp": content})
+    _post(serverchan_endpoint(key), data={"title": title[:100], "desp": content})
+    return True
+
+
+def push_pushplus(title: str, content: str) -> bool:
+    """PushPlus：微信推送的另一个免费选择，额度比 Server酱 免费版宽松。"""
+    token = os.getenv("PUSHPLUS_TOKEN")
+    if not token:
+        return False
+    _post("https://www.pushplus.plus/send",
+          json={"token": token, "title": title[:100], "content": content, "template": "markdown"})
     return True
 
 
@@ -86,6 +109,7 @@ def push_email(title: str, content: str) -> bool:
 
 CHANNELS = {
     "Server酱": push_serverchan,
+    "PushPlus": push_pushplus,
     "企业微信": push_wecom,
     "飞书": push_feishu,
     "Telegram": push_telegram,
@@ -104,6 +128,34 @@ def publish_yuque(title: str, content: str, slug: str) -> str | None:
     if not result.in_toc:
         log.warning("语雀文档已写入但未挂进目录，可在知识库「未归档」中找到：%s", result.url)
     return result.url
+
+
+CHANNEL_ENV_HINTS = {
+    "语雀": ("YUQUE_NAMESPACE + YUQUE_TOKEN（超级会员）或 YUQUE_COOKIE（免费）", ("YUQUE_NAMESPACE",)),
+    "Server酱": ("SERVERCHAN_SENDKEY", ("SERVERCHAN_SENDKEY",)),
+    "PushPlus": ("PUSHPLUS_TOKEN", ("PUSHPLUS_TOKEN",)),
+    "企业微信": ("WECOM_WEBHOOK", ("WECOM_WEBHOOK",)),
+    "飞书": ("FEISHU_WEBHOOK", ("FEISHU_WEBHOOK",)),
+    "Telegram": ("TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID", ("TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID")),
+    "邮件": ("SMTP_HOST + SMTP_USER + SMTP_PASSWORD + MAIL_TO",
+             ("SMTP_HOST", "SMTP_USER", "SMTP_PASSWORD", "MAIL_TO")),
+}
+
+
+def check_channels() -> list[tuple[str, bool, str]]:
+    """自检各渠道配置，返回 [(渠道, 是否就绪, 说明)]。语雀会真的调一次接口验证。"""
+    rows: list[tuple[str, bool, str]] = []
+    for channel, (hint, required) in CHANNEL_ENV_HINTS.items():
+        if channel == "语雀":
+            ready, detail = yuque.check_credentials()
+            rows.append((channel, ready, detail if ready else f"{detail}；需要 {hint}"))
+            continue
+        missing = [var for var in required if not os.getenv(var)]
+        if missing:
+            rows.append((channel, False, f"未配置，缺 {'、'.join(missing)}"))
+        else:
+            rows.append((channel, True, f"已配置（{hint}）"))
+    return rows
 
 
 def notify_all(title: str, short: str, full: str, *, yuque_slug: str | None = None) -> dict[str, str]:

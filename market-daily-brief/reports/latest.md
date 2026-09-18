@@ -1,6 +1,6 @@
 # 每日市场简报 2026-09-19（周六）
 
-生成时间：2026-09-19 02:04 (UTC+8)　|　行情日期：2026-09-18
+生成时间：2026-09-19 02:14 (UTC+8)　|　行情日期：2026-09-18
 
 > 今日非交易日或行情尚未更新，以下数据为最近一个交易日（2026-09-18）的收盘情况。
 
@@ -9,7 +9,7 @@
 - **沪深300**：4,507.39　今日 +1.06%　近1周 -0.06%　近1月 -2.41%　近3月 -7.41%　区间位置 11分位
 - **市场温度**：中性震荡　|　**建议总仓位**：5–6成，哑铃配置（红利+强势成长），控制单一板块权重
 - **观察池宽度**：A股标的 30 涨 / 3 跌（共 34 个）
-- **近1月超额领先**：WTI原油(+11.70%)、美债10年期收益率(+8.93%)、军工ETF(+7.20%)
+- **近1月超额领先**：WTI原油(+11.63%)、美债10年期收益率(+8.89%)、军工ETF(+7.20%)
 - **近1月明显落后**：中概互联网ETF(-6.97%)、新能源车ETF(-6.16%)、新能源ETF(-5.44%)
 
 判断依据：
@@ -19,7 +19,6 @@
 - 大盘处于空头排列
 - 大盘位于近半年区间 11 分位
 - 观察池内A股标的今日 30 涨 / 3 跌
-- 今日主导消息类别：监管资本市场(14条)、外部风险(13条)
 
 ## 二、A股板块ETF 与 沪深300 对比
 
@@ -70,7 +69,7 @@
 
 | 标的 | 最新价 | 今日 | 近1周 | 周超额 | 近1月 | 月超额 | 近3月 | 区间位置 | 趋势 | 建议 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 银行ETF `sh512800` | 0.835 | -0.24% | -1.42% | -1.36% | +2.45% | +4.87% | +11.93% | 83分位 | 震荡 | 持有观察 |
+| 银行ETF `sh512800` | 0.835 | -0.24% | -1.42% | -1.36% | +2.45% | +4.87% | +11.93% | 83分位 | 震荡 | 观望，等信号 |
 | 房地产ETF `sh512200` | 1.230 | +3.80% | +3.71% | +3.77% | +1.82% | +4.24% | +3.27% | 28分位 | 多头排列 | 持有 / 回调分批加仓 |
 | 证券ETF `sh512880` | 1.057 | +1.44% | -0.09% | -0.03% | -0.56% | +1.85% | -4.52% | 32分位 | 空头排列 | 观望，等信号 |
 | 煤炭ETF `sh515220` | 1.249 | -0.72% | -3.33% | -3.27% | -2.19% | +0.22% | +15.54% | 50分位 | 震荡 | 观望，等信号 |
@@ -89,7 +88,7 @@
 | 标的 | 最新价 | 今日 | 近1周 | 周超额 | 近1月 | 月超额 | 近3月 | 区间位置 | 趋势 | 建议 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 纳指ETF `sh513100` | 2.269 | +2.21% | +3.09% | +3.15% | +3.37% | +5.79% | +5.14% | 86分位 | 多头排列 | 持有 / 回调分批加仓 |
-| 日经ETF `sh513520` | 2.266 | +0.94% | +0.13% | +0.19% | -0.09% | +2.33% | -10.15% | 57分位 | 震荡 | 持有观察 |
+| 日经ETF `sh513520` | 2.266 | +0.94% | +0.13% | +0.19% | -0.09% | +2.33% | -10.15% | 57分位 | 震荡 | 观望，等信号 |
 | 中概互联网ETF `sh513050` | 1.014 | +1.10% | -0.10% | -0.04% | -9.38% | -6.97% | +7.76% | 22分位 | 空头排列 | 规避 / 逢反弹减仓 |
 
 ## 三、全球市场
@@ -106,137 +105,54 @@
 
 | 标的 | 最新 | 今日 | 近1周 | 近1月 | 近3月 | 相对本地基准(近1月) | 相对沪深300(近1月) | 趋势 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 纳斯达克 `^IXIC` | 26,415.46 | -0.01% | +0.31% | +1.34% | +3.69% | +1.49% | +3.75% | 多头排列 |
-| VIX恐慌指数 `^VIX` | 15.27 | -1.10% | -3.60% | +0.93% | -19.16% | +1.08% | +3.34% | 空头排列 |
-| 标普500 `^GSPC` | 7,629.45 | -0.11% | -0.36% | -0.15% | +3.69% | +0.00% | +2.26% | 震荡 |
-| 费城半导体 `^SOX` | 11,731.40 | +1.14% | -0.78% | -0.58% | -12.83% | -0.43% | +1.83% | 修复中 |
-| 道琼斯 `^DJI` | 51,626.21 | -0.29% | -1.80% | -2.15% | -0.43% | -1.99% | +0.27% | 震荡 |
-| 罗素2000 `^RUT` | 2,853.53 | -0.73% | -1.74% | -4.64% | -4.46% | -4.49% | -2.23% | 空头排列 |
+| 纳斯达克 `^IXIC` | 26,410.25 | -0.03% | +0.29% | +1.32% | +3.66% | +1.48% | +3.73% | 多头排列 |
+| VIX恐慌指数 `^VIX` | 15.24 | -1.30% | -3.79% | +0.73% | -19.32% | +0.89% | +3.14% | 空头排列 |
+| 标普500 `^GSPC` | 7,628.94 | -0.12% | -0.37% | -0.16% | +3.68% | +0.00% | +2.25% | 震荡 |
+| 费城半导体 `^SOX` | 11,722.79 | +1.06% | -0.86% | -0.65% | -12.89% | -0.49% | +1.76% | 修复中 |
+| 道琼斯 `^DJI` | 51,619.20 | -0.31% | -1.81% | -2.16% | -0.44% | -2.00% | +0.25% | 震荡 |
+| 罗素2000 `^RUT` | 2,853.49 | -0.74% | -1.74% | -4.64% | -4.46% | -4.48% | -2.23% | 空头排列 |
 
 ### 日韩台
 
 | 标的 | 最新 | 今日 | 近1周 | 近1月 | 近3月 | 相对本地基准(近1月) | 相对沪深300(近1月) | 趋势 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 台湾加权指数 `^TWII` | 47,180.75 | +1.93% | +2.16% | +4.33% | +2.00% | +4.48% | +6.74% | 多头排列 |
-| 韩国综合指数 `^KS11` | 6,894.23 | +2.66% | -0.23% | -0.27% | -18.61% | -0.12% | +2.14% | 修复中 |
-| 日经225 `^N225` | 65,018.95 | +1.38% | +1.57% | -1.51% | -6.01% | -1.36% | +0.90% | 空头排列 |
+| 台湾加权指数 `^TWII` | 47,180.75 | +1.93% | +2.16% | +4.33% | +2.00% | +4.49% | +6.74% | 多头排列 |
+| 韩国综合指数 `^KS11` | 6,894.23 | +2.66% | -0.23% | -0.27% | -18.61% | -0.11% | +2.14% | 修复中 |
+| 日经225 `^N225` | 65,018.95 | +1.38% | +1.57% | -1.51% | -6.01% | -1.35% | +0.90% | 空头排列 |
 
 ### 东南亚
 
 | 标的 | 最新 | 今日 | 近1周 | 近1月 | 近3月 | 相对本地基准(近1月) | 相对沪深300(近1月) | 趋势 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 越南ETF(VNM) `VNM` | 17.61 | +0.37% | +0.66% | +2.71% | -4.11% | +2.86% | +5.13% | 震荡 |
+| 越南ETF(VNM) `VNM` | 17.61 | +0.37% | +0.66% | +2.71% | -4.11% | +2.87% | +5.13% | 震荡 |
 | 新加坡海峡时报指数 `^STI` | 5,656.11 | -0.08% | -0.70% | -0.58% | +8.38% | -0.42% | +1.84% | 震荡 |
-| 印尼雅加达指数 `^JKSE` | 6,441.16 | -0.33% | -1.53% | -0.93% | +9.47% | -0.78% | +1.48% | 震荡 |
-| 泰国SET指数 `^SET.BK` | 1,584.15 | +0.05% | -2.62% | -1.89% | +4.28% | -1.74% | +0.52% | 震荡 |
-| 马来西亚KLCI `^KLSE` | 1,665.56 | -0.55% | -2.34% | -3.91% | -0.85% | -3.76% | -1.50% | 震荡 |
+| 印尼雅加达指数 `^JKSE` | 6,441.16 | -0.33% | -1.53% | -0.93% | +9.47% | -0.77% | +1.48% | 震荡 |
+| 泰国SET指数 `^SET.BK` | 1,584.15 | +0.05% | -2.59% | -1.86% | +4.31% | -1.70% | +0.55% | 震荡 |
+| 马来西亚KLCI `^KLSE` | 1,665.56 | -0.55% | -2.34% | -3.91% | -0.85% | -3.75% | -1.50% | 震荡 |
 
 ### 欧洲
 
 | 标的 | 最新 | 今日 | 近1周 | 近1月 | 近3月 | 相对本地基准(近1月) | 相对沪深300(近1月) | 趋势 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 英国富时100 `^FTSE` | 10,659.13 | -1.45% | +0.08% | -0.83% | +1.23% | -0.68% | +1.59% | 震荡 |
+| 英国富时100 `^FTSE` | 10,659.13 | -1.45% | +0.08% | -0.83% | +1.23% | -0.67% | +1.59% | 震荡 |
 | 德国DAX `^GDAXI` | 25,304.06 | -1.60% | -1.03% | -3.19% | +2.57% | -3.03% | -0.77% | 震荡 |
 | 欧洲斯托克50 `^STOXX50E` | 6,236.20 | -1.37% | -1.41% | -3.50% | +0.24% | -3.34% | -1.08% | 空头排列 |
-| 法国CAC40 `^FCHI` | 8,065.02 | -1.49% | -1.40% | -4.94% | -3.81% | -4.79% | -2.53% | 空头排列 |
+| 法国CAC40 `^FCHI` | 8,065.02 | -1.49% | -1.40% | -4.94% | -3.81% | -4.78% | -2.53% | 空头排列 |
 
 ### 大类资产
 
 | 标的 | 最新 | 今日 | 近1周 | 近1月 | 近3月 | 相对本地基准(近1月) | 相对沪深300(近1月) | 趋势 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| WTI原油 `CL=F` | 95.99 | -5.81% | -4.06% | +9.29% | +36.47% | +11.70% | +11.70% | 多头排列 |
-| 美债10年期收益率 `^TNX` | 5.00 | +1.11% | +0.54% | +6.52% | +13.63% | +8.93% | +8.93% | 多头排列 |
-| COMEX铜 `HG=F` | 6.70 | +1.78% | +3.62% | +3.77% | +12.80% | +6.18% | +6.18% | 多头排列 |
-| 美元指数 `DX-Y.NYB` | 100.23 | +0.01% | +1.12% | +1.35% | -1.36% | +3.76% | +3.76% | 修复中 |
+| WTI原油 `CL=F` | 95.92 | -5.88% | -4.13% | +9.21% | +36.37% | +11.63% | +11.63% | 多头排列 |
+| 美债10年期收益率 `^TNX` | 5.00 | +1.07% | +0.50% | +6.47% | +13.58% | +8.89% | +8.89% | 多头排列 |
+| COMEX铜 `HG=F` | 6.70 | +1.77% | +3.61% | +3.76% | +12.79% | +6.18% | +6.18% | 多头排列 |
+| 美元指数 `DX-Y.NYB` | 100.23 | +0.01% | +1.12% | +1.34% | -1.36% | +3.76% | +3.76% | 修复中 |
 | 美元离岸人民币 `CNY=X` | 6.69 | -0.28% | -0.28% | -0.52% | -1.51% | +1.89% | +1.89% | 空头排列 |
-| COMEX黄金 `GC=F` | 4,431.90 | +0.73% | +0.52% | -3.05% | +10.55% | -0.64% | -0.64% | 震荡 |
+| COMEX黄金 `GC=F` | 4,430.90 | +0.71% | +0.50% | -3.07% | +10.53% | -0.66% | -0.66% | 震荡 |
 
 ## 四、资讯要点
 
-共抓取 216 条去重后资讯，来源：CNBC市场、Investing.com、Yahoo Finance、东南亚市场、华尔街见闻、同花顺、新浪7x24、新浪财经、日本股市、欧洲市场、港股要闻、财联社、韩国股市
-
-### 宏观与政策（高影响）
-
-- `09-18 23:34` **华尔街见闻**：[美国堪萨斯城联储主席Jeff Schmid：支持FOMC在9月份加息，通胀现象不仅仅存在于能源领域。](https://wallstreetcn.com/livenews/3167398) — 政策货币、宏观经济
-- `09-18 23:19` **华尔街见闻**：[德国大众下调今年利润预期，股价跌超7%](https://wallstreetcn.com/livenews/3167394) — 监管资本市场、外部风险
-- `09-19 01:47` **财联社**：[据报道，数据显示，沙特阿拉伯经曼德海峡的出口持续低迷，自8月初以来，每周的通行量不到今年七月平均水平的三分之一。](https://www.cls.cn/detail/2487646) — 期货市场情报、中东冲突、原油市场动态
-- `09-19 01:16` **财联社**：[周五（9月18日），美联储隔夜逆回购协议（RRP）使用规模为5.76亿美元。](https://www.cls.cn/detail/2487641) — 环球市场情报、政策货币、监管资本市场
-- `09-18 23:34` **财联社**：[美联储施密德：近期数据显示通胀趋势超过3% 加息是朝着恢复2%通胀目标迈出的一步](https://www.cls.cn/detail/2487610) — 环球市场情报、美联储动态、政策货币
-- `09-19 01:58` **华尔街见闻**：[洲际交易所（ICE）：9月15日当周，投机者所持ICE布伦特原油净多头头寸增加16,904手合约，至282,657手合约，创十七周新高。
-
-](https://wallstreetcn.com/livenews/3167431) — 监管资本市场
-- `09-19 01:52` **华尔街见闻**：[美银预测美联储加息至5%以上 建议客户为2年期收益率上行布仓](https://wallstreetcn.com/livenews/3167427) — 政策货币
-- `09-19 01:35` **华尔街见闻**：[报道：西屋电气拟在美国IPO中获得超500亿美元估值](https://wallstreetcn.com/livenews/3167424) — 监管资本市场
-- `09-19 00:18` **华尔街见闻**：[英国两年期国债收益率周五涨超10个基点](https://wallstreetcn.com/livenews/3167409) — 政策货币
-- `09-19 00:13` **华尔街见闻**：[秘鲁央行：厄尔尼诺将造成今年GDP增速被削减0.99个百分点。](https://wallstreetcn.com/livenews/3167408) — 宏观经济
-
-### A股与国内消息
-
-- `09-18 23:49` **华尔街见闻**：[报道：日本央行进行汇率摸底](https://wallstreetcn.com/livenews/3167404) — 外部风险
-- `09-19 02:04` **财联社**：[ICE：截至9月15日当周 投机者所持ICE布伦特原油净多头头寸增加16,904手合约](https://www.cls.cn/detail/2487649) — 环球市场情报、监管资本市场
-- `09-18 23:49` **财联社**：[北京：推动模型与芯片适配调优 支持推理专用芯片、模型轻量化、边缘端部署等技术攻关](https://www.cls.cn/detail/2487619) — 能源行业新闻、半导体芯片
-- `09-18 23:17` **财联社**：[Anthropic据报计划年底拥有约5吉瓦可用算力 明年再翻番](https://www.cls.cn/detail/2487604) — 人工智能、监管资本市场
-- `09-18 22:30` **财联社**：[美国财政部2年期国债收益率升至4.743%，为2024年7月以来最高水平。](https://www.cls.cn/detail/2487578) — 环球市场情报、美国宏观速递
-- `09-19 00:32` **同花顺**：[ETF流动性建设提速 做市商密集扩容](https://news.10jqka.com.cn/20260919/c680078749.shtml) — 创业板、资金流动性、ETF
-- `09-18 23:01` **同花顺**：[期市夜盘收盘，国内期货主力合约多数上涨，纸浆涨超2%](https://news.10jqka.com.cn/20260918/c680078353.shtml) — 主力合约、纸浆、纸浆期货
-- `09-19 01:36` **财联社**：[SpaceXAI发布Grok Voice Transcribe 2.0，准确率提升一倍，价格保持不变。](https://www.cls.cn/detail/2487644) — 美股动态
-- `09-19 01:19` **财联社**：[国际原子能机构新增11个理事会成员国](https://www.cls.cn/detail/2487642) — 环球市场情报
-- `09-19 01:13` **财联社**：[上海部分区域发布暴雨预警](https://www.cls.cn/detail/2487640) — 期货市场情报、天气变化
-- `09-19 00:28` **新浪7x24**：[秘鲁央行行长表示，未来数月不排除加息可能，将等待合适时机下调利率。](https://finance.sina.cn/7x24/2026-09-19/detail-inishrat0153270.d.html) — 其他、政策货币
-- `09-19 00:22` **新浪财经**：[商务部：扩大优质产品进口 促进进出口平衡发展](https://finance.sina.com.cn/jjxw/2026-09-19/doc-inishrap3024511.shtml) — 宏观经济
-
-### 全球宏观
-
-- `09-18 23:33` **同花顺**：[美联储施密德：当前通胀问题 “不只是能源导致”，众多商品与服务价格涨幅居高不下](https://news.10jqka.com.cn/20260918/c680078525.shtml) — 美联储、通货膨胀率、政策货币
-- `09-19 02:00` **财联社**：[据伊朗方面消息，巴基斯坦内政部长本周可能访问伊朗。](https://www.cls.cn/detail/2487648) — 期货市场情报、中东冲突、外部风险
-- `09-19 01:54` **财联社**：[乌克兰基辅市长称该市遭弹道导弹袭击](https://www.cls.cn/detail/2487647) — 期货市场情报、俄乌冲突快报、外部风险
-- `09-19 01:34` **财联社**：[消息人士称，西屋电气计划在美国IPO中寻求超过500亿美元估值。](https://www.cls.cn/detail/2487643) — 环球市场情报、美股IPO动态、监管资本市场
-- `09-19 00:44` **财联社**：[俄罗斯库尔斯克核电站否认冷却塔遭无人机袭击](https://www.cls.cn/detail/2487636) — 期货市场情报、俄乌冲突快报、无人机
-- `09-19 00:31` **财联社**：[据报道，美国总统特朗普表示，美国正在与胡塞武装进行谈判，胡塞武装也希望达成协议。](https://www.cls.cn/detail/2487632) — 期货市场情报、中东冲突、外部风险
-- `09-19 00:29` **财联社**：[美联储施密德表示，美国财政部回购国债不会让美联储的工作变得更困难或更容易。](https://www.cls.cn/detail/2487631) — 环球市场情报、监管资本市场
-- `09-18 23:56` **财联社**：[国际原子能机构称俄罗斯一核电站冷却塔被无人机击中](https://www.cls.cn/detail/2487623) — 期货市场情报、俄乌冲突快报、TMT行业观察
-- `09-18 23:38` **财联社**：[俄国防部称在乌克兰皮夫登尼港击中一艘货船。](https://www.cls.cn/detail/2487614) — 俄乌冲突快报、外部风险
-- `09-18 23:26` **财联社**：[美联储负责监管的副主席鲍曼：预计未来几周考虑对压力测试的最终修订](https://www.cls.cn/detail/2487608) — 环球市场情报、政策货币
-
-### 海外市场
-
-**东南亚**
-
-- `09-17 13:31` **东南亚市场/KLSE Screener**：[亚股升温后动力减弱 马股逆市窄幅走低](https://news.google.com/rss/articles/CBMirAJBVV95cUxNUkJQTU9XUDJDd2E2Ml9pb2ZJRVNlZkFYYU9UeVg0a043emFwbk9TWmc1bFpQbjdBX3F1Y0xzTDJuTmY3WHJGZkY3QmpzM0dfNkVrdk5CenFxbm5tTC1PdDlFeERSNTdDX1c0ZUVIdHVFcUdjR1VfSU9tdGdVVUJUbGJqaUNrX2MyVmhvVjE4TzFmZjRUR3E0MGRFeDlqNE9JMEx2eTVTdHBkaFVIcWVjeHdPOU84RmpWYU01RHdfWHU0WW5NZmpRQ1NwSWxfRU9RczYtTTU3ZkQzQlp0dzFtWmFKQWNXa0VhVUJfNGpjLUJpLVE3ejhENEF3ejc1clFhaURfeVRzam1Qd28xdEpMQnRlMktnRlVPZTF0aGhRcUlTdEZnRTZoaVZKT24?oc=5)
-- `09-14 16:46` **东南亚市场/新浪财经**：[特斯拉(TSLA.US)在越南设立子公司 进军东南亚增长最快电动汽车市场](https://news.google.com/rss/articles/CBMib0FVX3lxTE5oVzg2QW9sdkxweDN0TVVkSTI1MzNaYU1OS2YwV0lZSkJEMW9PWjk0dFNQRGx6dzRpYmJYUVJDdmFhbHpOVVhOOHNrQ2NDVktmMUxYRnpQcmxZaEx1eXRvbVFoc1NlY25sYjZNd1RRMA?oc=5)
-
-**日本**
-
-- `09-18 20:25` **日本股市/汽车之家**：[受伊朗危机影响，日本股市下挫](https://news.google.com/rss/articles/CBMia0FVX3lxTE0yUURwMGZsNXVYcGwyamZPbGZ0SzZHQnRiNE9KRmp2b3M3emZNd0FhRUs0VkQwYm90eGtyV1prUUtiYzdfMk9QS1liQ1czRi1EYlZzVm9FNUlhTGt6NFRyUlZrbTZMdGJ1S0M4?oc=5)
-- `09-18 15:00` **日本股市/英为财情 Investing.com**：[日本股市上涨；截至收盘日经225指数上涨1.52% 提供者 Investing.com](https://news.google.com/rss/articles/CBMicEFVX3lxTE00LUwxdEtnc0U4MG4ySG8yREsyV1hhOW9ZX0VvTng2cnhzaE5wUzk2cE1mZDBESkVPNGZDWXBrWmQyMVhqRnFneWphSVptNzJ6WGpjZy1zQVNITUVJWG1kbktnRlV3T2NKeG93VndLTkM?oc=5)
-- `09-16 08:53` **日本股市/新浪财经**：[日韩股市，涨跌不一](https://news.google.com/rss/articles/CBMieEFVX3lxTE5QMDEwdFVnQVZ0Q1RzU0lkd25TMGZOeUZjYVNjdnJkNUwyaXBoak56RXBtcjVtUVNrVW5oYWZ5dHVPakZrV0M5cWEwc1lFRnhVNUdPeHB3cjViMFEyQUVDblNYNnZ0Y19YSlBhWEE2N2ZpY3JEVmJqNA?oc=5)
-- `09-15 14:57` **日本股市/Moomoo**：[东京市场摘要：日经平均指数连续三日下跌；金融股虽受益于收益率上升，但因等待日美金融会议而表现疲软；村田制作所受MLCC增产报道提振大幅反弹；野村、原油相关股则因WTI油价创四个月新高而上涨](https://news.google.com/rss/articles/CBMivAFBVV95cUxOUDlSR2xqdmEzVmlJbml0bDEwb1dPSFFDMThhbUJET2ZkTnRjNWplZzY0TUxvMm80eHJRMVRXZ1dSQzlncXFlRWUtd3ZJbFFJYnl2cElSSnBPZ2p0dnJ0d1htSnNUNDlXUUFjMTM4MDBDUkdCRHhwMm8wLXpINEFMai1tN2FvQkxPSmpDMU1ZZFNOb0NRd01qNnl2cjYtTlJxLVhPQ0FQbC1VdXY0MkFEMDdzbmYyLXdpcjJkbg?oc=5)
-
-**欧洲**
-
-- `09-18 19:52` **欧洲市场/Moomoo**：[央行政策前景及地缘政治拖累欧洲股市午盘走低](https://news.google.com/rss/articles/CBMirgFBVV95cUxPcUd1LVJkNW80ZXMta0hxMXRUQ3hlMG1SdHRwYVBYdjYxdlFrWEN4cXNIS08xOHA0MFpkRk9QQlVhSkJ5RG9xZXEydTRrcE9pS3p0OWIwakJlaW5URzdvVUJfY1UtWnBWa3dtY2xNb1hnUHhiV0kwd0gtRURYbEF5N3B4eDFEMlZZVkwtRDlJVGRTTEhOSmhURnJyM0FfY0Y3SWdKWXQwTUgzaTBaV3c?oc=5) — 外部风险
-- `09-14 19:00` **欧洲市场/IndexBox**：[油价上涨、中东紧张与人工智能利空拖累，欧洲股市在央行决策前下跌 - 新闻和统计](https://news.google.com/rss/articles/CBMiwwFBVV95cUxNQk9FbVpxNndDNHhjdlRrRkt6SWxaOTlPSTdiZUhZVER3UExINjZQcklDTURxVUNnUzVPNWU0b0ZjRnlvV3hGNkkxYVd0SlFILVh0YnhrS29vRHJEbHg3UERiNDNuR3l0b1h4MFVlZXgtdENYLVZuN2dWN1RUWGxrNmVZLUJ3OXBNQUxrb2E2VHpVZS1lY19xVEpTZlZKX1NSVkdIdmQ2bEpYSURhelNnQTlpY3c0a0J4elZ3SEJRWFlISDg?oc=5)
-
-**港股**
-
-- `09-18 04:00` **港股要闻/Yahoo 財經**：[港股三大指數齊跌 美聯儲鷹派加息重挫黃金股](https://news.google.com/rss/articles/CBMizwJBVV95cUxQWGVXQi1mTHZ3ODN6dmlNS01Xa3VrdzMtbXNEQy1hdFU0Wkw5djNDbEM5N1A1N1NyYkVNVmN1UTd4TnBXeGU5UDV0ZDlsT1VJNHlZTy1lS2Q5QkE1blEwSlJFZkMxWTljR3RGZUJpbkZSV3JLQXhqXzhfWU4tVXlkdW1NQWNJMFRWRklHYVJuLS1VSi1Oc19oZS14ZTRDV2NuWTNuLUdCeEQ2SUtJLUQzbVg4NjlXaVZ6akRtR1VUNzVFTTBPTEhYc3BUTUdRV3NHRWZ5WlVDSG5PQ1pVbmwyVExSWnBUbEJlQzh0alVRNFVtNVZFekZBTW1FQzhTTFBiY2xSTnZoY0c4RldyUW5wZDFHdWtXaW9idEJjVXZjRUx1UERlZFY5TjMzUE8tYUZaY3ZWRy1QeXgxRmJwQzluNUQ1cWQzVHp6N3NJbHFKMA?oc=5) — 政策货币
-- `09-18 22:42` **港股要闻/businesstimes.com.hk**：[恒生指數24,800點已成短期明顯阻力：兩度攻關均未能企穩｜張智威專欄](https://news.google.com/rss/articles/CBMi3AJBVV95cUxNbWxwZnVncVNpZXJ2V2ZicXlvV2xpRHZQZDhaUlBrazc3TWdkVFJwTU9WRDRwa1JnTEdnNEJfRmFWdE9MWUlMWmxVd0pZZU15NUVNMmk0dm5sODVhZmlaRzVXV0hQWkFkUmVTZjhOWXdzc0o2NkdrbDJMQzc2akNiaHl4Uk0wY2hMWjlEcHhfUVNiZV96LUl5OEs0U0hUWkZsOGhXLUpzVjY4eElWN29JWjdoSmNMYVBWR3dxWjYzMDFlVHV3NHF5MjN5b2hyMkxWd0dzR2owalhqY0RubHdpQVZETGZjY05jWHByZ00tMHFBeWo3U2xQMF9nbEE1YkhHZWQzWjB0a0ctWFVhUWpwSk5BeFFZVnpWeGlkd0tmT1MxTExfRU51eTJqUncza2JUelN5MGI4NWRoVEVVUk1xUFVGc3gwdGRPTHJyUTZsNFU0VmhxYVBXTDVRNTc?oc=5)
-- `09-18 19:32` **港股要闻/香港經濟日報HKET**：[【港股收市】恒指升146點聯想升逾9%破頂阿里巴巴升4% MINIMAX升近19%（不斷更新）](https://news.google.com/rss/articles/CBMi5wNBVV95cUxObnJ3OXVnaWd0SmxIakMzTzY4bFVCeFE3cVFKc0RtTUlpSkFQYXFScm5fREFXTjFqM3ByWGFlTVRzcXlJcm0zbGhxS2w1ZXR2Y3ZJSVNvMUlUaHdrVXB3OGNaMm4zM3FkaWJLX0xmRklWRFFVTnRmTUYyUkdETjduZ2d5T1FUX0Zub1BTSWpObnlLTmIza25iWVU2M0hJdk1Na2lVM1dwTjBSM0tnVm5tOGRxalZLR19odGxBNHIwZkdvb1VwR2NweTR0MkVpM2dMakhwZjBJb3U1dk1IV3lKVnFLNHlYeS1vYVJvNURRZlBxNGdwM29lNU1KQm1FOUlZS2hMc2x6YVpyc0ZfMy04RDJCNlJnbW53dWQyVFh4UmxFWkV2bDRuLXlJYlhoQjd0RHhkQnRXNnVtZ0VkLXFodXU3QTlUVW5IYUR6VUtVemM4Q29hSktWM1N6M3Y3MnFaSmZBVU40R2Nka0otTnRQS2p0cERTSnk5RF8wRUt4clBsVlBtazZsaUJoNzBiNU9jUjhmLVl6Mk16Sk1TVnRRNGh2Rk52SEJpUFhIeVNGU0hJOEJQZC1RV0JsV2RKZWJfU0xNMGw1RHpzeVhrVG9fTFZSdUpya2xMS3d1dGpWYUJDZ0d0SUhJ?oc=5)
-- `09-18 16:52` **港股要闻/finance.now.com**：[【港股收市】恒指升146點 MiniMax再炒高近19% 聯想飆9%](https://news.google.com/rss/articles/CBMiekFVX3lxTE9VQzNJRjZwaVlOMERGX1lNMG1DYko2emxlV2pUQU45dU80WVNvenhkQkd0M1FYN3FnaXlUR3ZxZ250SG82U3JsUE1ybjlFc3hsaTdnN3RoTzhfUWJzc3R5d1pFVjJ6V2JOaENDV0RJaVpqZnhMeFZrTm5B?oc=5)
-
-**美股**
-
-- `09-19 02:01` **CNBC市场**：[Ticket prices rise for Macklemore solo concert after Ed Sheeran tour removal](https://www.cnbc.com/2026/09/18/macklemore-ticket-prices-rise-amid-ed-sheeran-tour-fallout.html)
-- `09-19 01:41` **CNBC市场**：[SpaceX scores another $950 million from NASA for 3 more crewed flights to ISS](https://www.cnbc.com/2026/09/18/spacex-scores-950-million-from-nasa-for-3-more-crewed-flights-to-iss-.html)
-- `09-19 01:34` **CNBC市场**：[JPMorgan, Citigroup CEOs attending Trump's state dinner for China's Xi: Sources](https://www.cnbc.com/2026/09/18/trump-xi-state-dinner-jpmorgan-jamie-dimon.html)
-- `09-19 01:11` **CNBC市场**：[Auto industry urges Trump to bar Chinese automakers in U.S. ahead of Xi visit](https://www.cnbc.com/2026/09/18/xi-visit-automakers-urge-trump-to-bar-chinese-automakers-in-us.html)
-
-**韩国**
-
-- `09-15 14:40` **韩国股市/ajudaily.com**：[收盘综述：韩国股市因外资和机构抛售下跌，KOSPI收跌0.85%](https://news.google.com/rss/articles/CBMiW0FVX3lxTE9jNW9jZmVfd0xhYVlVa2dSMTRHaXJtdEV6NFA0Ym1jOW1xSVAyLXVqYWtkZHdOTXliLXhLMU45THpUdjZ2VWNReFYzNVRSQVlReUcxZmNCSWRYX0U?oc=5) — 资金面
-- `09-18 19:53` **韩国股市/财联社**：[韩股一度跌逾5%！大摩：有逾四成上涨空间，“去杠杆”已过半](https://news.google.com/rss/articles/CBMiSEFVX3lxTE9GdzFjYUJiV0V4RWJ3M2NBbFRxT0ViN3pHdnJoMDhXcXROMEZHSmlReVBvS0hBd2taazV3cWRNVmZ6LVA4SnF3Rg?oc=5)
-- `09-18 19:17` **韩国股市/财联社**：[韩股大幅跳水何时休？分析师们这样说......](https://news.google.com/rss/articles/CBMiSEFVX3lxTE9oeG5UaHhQWVVZcDhuYW0tWG5wcEY1MlExVk0wY1ZLdUhTbGd1bXJTaW9xOFlYOWhZOWt1d1pqMzlrM3plakppVA?oc=5)
-- `09-16 12:00` **韩国股市/金十数据**：[韩国股市崩跌之后，机会来了？花旗仍押注韩国牛市：10000点目标未变-市场参考](https://news.google.com/rss/articles/CBMiT0FVX3lxTE1VdTAtVFN6V3B2RVUzNFBULTN6TG1lSGt4clp3MlBDcUtCcFJaUXdqV2hnTmtjbktweDd2SzJlUlZSZEM3TkZOWjFBRHJrdnc?oc=5)
+（本次未获取到资讯）
 
 ## 五、操作建议与理由
 
@@ -244,43 +160,23 @@
 
 ### 房地产ETF `sh512200` — 持有 / 回调分批加仓
 
-- 评分 +9.56　趋势：多头排列　强弱：显著强于沪深300
+- 评分 +8.56　趋势：多头排列　强弱：显著强于沪深300
 - 今日 +3.80%　近1周 +3.71%（超额 +3.77%）　近1月 +1.82%（超额 +4.24%）
 - 理由：
   - 近1月跑赢沪深300 4.24 个百分点（自身 +1.82%）
   - 近1周跑赢沪深300 3.77 个百分点（自身 +3.71%）
   - 价格站上20日与60日均线（MA20 1.21，MA60 1.20），中期趋势向上
-- 信号：单日大涨 +3.80%；消息面偏暖（情绪分 +2）
-- 相关消息：
-  - `09-19 00:32` **同花顺**：[房贷新政落地叠加“金九银十” 银行房贷业务有所升温](https://news.10jqka.com.cn/20260919/c680078751.shtml) — 贷款、房贷、微信公众号
+- 信号：单日大涨 +3.80%
 
-### 半导体ETF `sh512480` — 持有 / 回调分批加仓
+### 纳指ETF `sh513100` — 持有 / 回调分批加仓
 
-- 评分 +8.69　趋势：修复中　强弱：略强于沪深300
-- 今日 +4.00%　近1周 +8.44%（超额 +8.50%）　近1月 -0.10%（超额 +2.32%）
+- 评分 +7.99　趋势：多头排列　强弱：显著强于沪深300
+- 今日 +2.21%　近1周 +3.09%（超额 +3.15%）　近1月 +3.37%（超额 +5.79%）
 - 理由：
-  - 近1月跑赢沪深300 2.32 个百分点（自身 -0.10%）
-  - 近1周跑赢沪深300 8.50 个百分点（自身 +8.44%）
-  - 价格重新站上20日均线，但60日均线尚未转向，属于修复阶段
-- 信号：单日大涨 +4.00%；近3月最大回撤 -38.7%；消息面偏暖（情绪分 +3）
-- 相关消息：
-  - `09-18 23:49` **财联社**：[北京：推动模型与芯片适配调优 支持推理专用芯片、模型轻量化、边缘端部署等技术攻关](https://www.cls.cn/detail/2487619) — 能源行业新闻、半导体芯片
-  - `09-18 23:05` **同花顺**：[AI笔记设备初创公司PlaudAI目标今年销售额5亿美元，计划后年赴美上市](https://news.10jqka.com.cn/20260918/c680078409.shtml) — 赴美上市、人工智能、美元(USD)
-  - `09-18 23:28` **同花顺**：[On昂跑签约球星姆巴佩 亚太区公关负责人回应](https://news.10jqka.com.cn/20260918/c680078509.shtml) — 足球概念、体育产业、昂跑
-
-### 芯片ETF `sz159995` — 持有 / 回调分批加仓
-
-- 评分 +7.89　趋势：修复中　强弱：略强于沪深300
-- 今日 +3.41%　近1周 +6.96%（超额 +7.03%）　近1月 -0.60%（超额 +1.81%）
-- 理由：
-  - 近1月跑赢沪深300 1.81 个百分点（自身 -0.60%）
-  - 近1周跑赢沪深300 7.03 个百分点（自身 +6.96%）
-  - 价格重新站上20日均线，但60日均线尚未转向，属于修复阶段
-- 信号：单日大涨 +3.41%；近3月最大回撤 -38.7%；消息面偏暖（情绪分 +2）
-- 相关消息：
-  - `09-18 23:49` **财联社**：[北京：推动模型与芯片适配调优 支持推理专用芯片、模型轻量化、边缘端部署等技术攻关](https://www.cls.cn/detail/2487619) — 能源行业新闻、半导体芯片
-  - `09-18 22:50` **财联社**：[闪迪股价涨幅扩大至6%，总市值报2505亿美元。](https://www.cls.cn/detail/2487591) — 环球市场情报、存储芯片
-  - `09-18 23:28` **同花顺**：[On昂跑签约球星姆巴佩 亚太区公关负责人回应](https://news.10jqka.com.cn/20260918/c680078509.shtml) — 足球概念、体育产业、昂跑
+  - 近1月跑赢沪深300 5.79 个百分点（自身 +3.37%）
+  - 近1周跑赢沪深300 3.15 个百分点（自身 +3.09%）
+  - 价格站上20日与60日均线（MA20 2.22，MA60 2.19），中期趋势向上
+- 信号：处于近半年区间高位（86分位）
 
 ### 科创50ETF `sh588000` — 持有 / 回调分批加仓
 
@@ -292,6 +188,26 @@
   - 价格重新站上20日均线，但60日均线尚未转向，属于修复阶段
 - 信号：近3月最大回撤 -31.2%
 
+### 半导体ETF `sh512480` — 持有 / 回调分批加仓
+
+- 评分 +7.19　趋势：修复中　强弱：略强于沪深300
+- 今日 +4.00%　近1周 +8.44%（超额 +8.50%）　近1月 -0.10%（超额 +2.32%）
+- 理由：
+  - 近1月跑赢沪深300 2.32 个百分点（自身 -0.10%）
+  - 近1周跑赢沪深300 8.50 个百分点（自身 +8.44%）
+  - 价格重新站上20日均线，但60日均线尚未转向，属于修复阶段
+- 信号：单日大涨 +4.00%；近3月最大回撤 -38.7%
+
+### 芯片ETF `sz159995` — 持有 / 回调分批加仓
+
+- 评分 +6.89　趋势：修复中　强弱：略强于沪深300
+- 今日 +3.41%　近1周 +6.96%（超额 +7.03%）　近1月 -0.60%（超额 +1.81%）
+- 理由：
+  - 近1月跑赢沪深300 1.81 个百分点（自身 -0.60%）
+  - 近1周跑赢沪深300 7.03 个百分点（自身 +6.96%）
+  - 价格重新站上20日均线，但60日均线尚未转向，属于修复阶段
+- 信号：单日大涨 +3.41%；近3月最大回撤 -38.7%
+
 ### 中证1000ETF `sh512100` — 持有 / 回调分批加仓
 
 - 评分 +6.50　趋势：修复中　强弱：显著强于沪深300
@@ -302,34 +218,6 @@
   - 价格重新站上20日均线，但60日均线尚未转向，属于修复阶段
 - 信号：近3月最大回撤 -22.0%
 
-### 纳指ETF `sh513100` — 持有 / 回调分批加仓
-
-- 评分 +6.49　趋势：多头排列　强弱：显著强于沪深300
-- 今日 +2.21%　近1周 +3.09%（超额 +3.15%）　近1月 +3.37%（超额 +5.79%）
-- 理由：
-  - 近1月跑赢沪深300 5.79 个百分点（自身 +3.37%）
-  - 近1周跑赢沪深300 3.15 个百分点（自身 +3.09%）
-  - 价格站上20日与60日均线（MA20 2.22，MA60 2.19），中期趋势向上
-- 信号：处于近半年区间高位（86分位）；消息面偏冷（情绪分 -3）
-- 相关消息：
-  - `09-18 23:19` **华尔街见闻**：[德国大众下调今年利润预期，股价跌超7%](https://wallstreetcn.com/livenews/3167394) — 监管资本市场、外部风险
-  - `09-19 01:34` **财联社**：[消息人士称，西屋电气计划在美国IPO中寻求超过500亿美元估值。](https://www.cls.cn/detail/2487643) — 环球市场情报、美股IPO动态、监管资本市场
-  - `09-19 01:36` **财联社**：[SpaceXAI发布Grok Voice Transcribe 2.0，准确率提升一倍，价格保持不变。](https://www.cls.cn/detail/2487644) — 美股动态
-
-### 人工智能ETF `sh515070` — 持有 / 回调分批加仓
-
-- 评分 +6.46　趋势：修复中　强弱：略强于沪深300
-- 今日 +2.58%　近1周 +3.92%（超额 +3.98%）　近1月 +0.54%（超额 +2.96%）
-- 理由：
-  - 近1月跑赢沪深300 2.96 个百分点（自身 +0.54%）
-  - 近1周跑赢沪深300 3.98 个百分点（自身 +3.92%）
-  - 价格重新站上20日均线，但60日均线尚未转向，属于修复阶段
-- 信号：近3月最大回撤 -25.2%；消息面偏暖（情绪分 +1）
-- 相关消息：
-  - `09-18 23:17` **财联社**：[Anthropic据报计划年底拥有约5吉瓦可用算力 明年再翻番](https://www.cls.cn/detail/2487604) — 人工智能、监管资本市场
-  - `09-19 01:36` **华尔街见闻**：[SpaceXAI：推出 Grok 语音转写 2.0 版本，在保持原有定价不变的情况下，准确率提升一倍。](https://wallstreetcn.com/livenews/3167425)
-  - `09-19 00:32` **同花顺**：[ETF流动性建设提速 做市商密集扩容](https://news.10jqka.com.cn/20260919/c680078749.shtml) — 创业板、资金流动性、ETF
-
 ### 医疗ETF `sh512170` — 持有 / 回调分批加仓
 
 - 评分 +6.13　趋势：多头排列　强弱：略弱于沪深300
@@ -339,17 +227,25 @@
   - 近1周跑赢沪深300 4.04 个百分点（自身 +3.98%）
   - 价格站上20日与60日均线（MA20 0.34，MA60 0.33），中期趋势向上
 
+### 人工智能ETF `sh515070` — 持有 / 回调分批加仓
+
+- 评分 +5.96　趋势：修复中　强弱：略强于沪深300
+- 今日 +2.58%　近1周 +3.92%（超额 +3.98%）　近1月 +0.54%（超额 +2.96%）
+- 理由：
+  - 近1月跑赢沪深300 2.96 个百分点（自身 +0.54%）
+  - 近1周跑赢沪深300 3.98 个百分点（自身 +3.92%）
+  - 价格重新站上20日均线，但60日均线尚未转向，属于修复阶段
+- 信号：近3月最大回撤 -25.2%
+
 ### 5G通信ETF `sh515050` — 持有 / 回调分批加仓
 
-- 评分 +5.90　趋势：修复中　强弱：显著强于沪深300
+- 评分 +5.40　趋势：修复中　强弱：显著强于沪深300
 - 今日 +2.49%　近1周 +2.20%（超额 +2.26%）　近1月 +1.90%（超额 +4.32%）
 - 理由：
   - 近1月跑赢沪深300 4.32 个百分点（自身 +1.90%）
   - 近1周跑赢沪深300 2.26 个百分点（自身 +2.20%）
   - 价格重新站上20日均线，但60日均线尚未转向，属于修复阶段
-- 信号：近3月最大回撤 -36.9%；消息面偏暖（情绪分 +1）
-- 相关消息：
-  - `09-18 23:54` **财联社**：[北京：制定北京市词元工厂分级评价标准 覆盖模型适配数量、词元吞吐速度、首字延迟、缓存命中率、电能利用效率（PUE）等核心技术指标](https://www.cls.cn/detail/2487622) — 能源行业新闻、国产软件
+- 信号：近3月最大回撤 -36.9%
 
 ### 军工ETF `sh512660` — 持有观察
 
@@ -360,10 +256,6 @@
   - 近1周跑输沪深300 0.54 个百分点（自身 -0.60%）
   - 价格重新站上20日均线，但60日均线尚未转向，属于修复阶段
 - 信号：近3月最大回撤 -18.9%
-- 相关消息：
-  - `09-19 01:54` **财联社**：[乌克兰基辅市长称该市遭弹道导弹袭击](https://www.cls.cn/detail/2487647) — 期货市场情报、俄乌冲突快报、外部风险
-  - `09-18 23:38` **财联社**：[俄国防部称在乌克兰皮夫登尼港击中一艘货船。](https://www.cls.cn/detail/2487614) — 俄乌冲突快报、外部风险
-  - `09-18 23:30` **华尔街见闻**：[德国股市收跌1.6%，意大利银行板块超2.3%](https://wallstreetcn.com/livenews/3167397)
 
 ### 中证500ETF `sh510500` — 持有观察
 
@@ -375,32 +267,6 @@
   - 价格重新站上20日均线，但60日均线尚未转向，属于修复阶段
 - 信号：近3月最大回撤 -18.9%
 
-### 银行ETF `sh512800` — 持有观察
-
-- 评分 +3.84　趋势：震荡　强弱：略强于沪深300
-- 今日 -0.24%　近1周 -1.42%（超额 -1.36%）　近1月 +2.45%（超额 +4.87%）
-- 理由：
-  - 近1月跑赢沪深300 4.87 个百分点（自身 +2.45%）
-  - 近1周跑输沪深300 1.36 个百分点（自身 -1.42%）
-- 信号：消息面偏暖（情绪分 +5）
-- 相关消息：
-  - `09-19 01:52` **华尔街见闻**：[美银预测美联储加息至5%以上 建议客户为2年期收益率上行布仓](https://wallstreetcn.com/livenews/3167427) — 政策货币
-  - `09-19 01:35` **华尔街见闻**：[报道：西屋电气拟在美国IPO中获得超500亿美元估值](https://wallstreetcn.com/livenews/3167424) — 监管资本市场
-  - `09-18 23:26` **财联社**：[美联储负责监管的副主席鲍曼：预计未来几周考虑对压力测试的最终修订](https://www.cls.cn/detail/2487608) — 环球市场情报、政策货币
-
-### 日经ETF `sh513520` — 持有观察
-
-- 评分 +2.55　趋势：震荡　强弱：略强于沪深300
-- 今日 +0.94%　近1周 +0.13%（超额 +0.19%）　近1月 -0.09%（超额 +2.33%）
-- 理由：
-  - 近1月跑赢沪深300 2.33 个百分点（自身 -0.09%）
-  - 近1周跑赢沪深300 0.19 个百分点（自身 +0.13%）
-- 信号：近3月最大回撤 -17.6%；消息面偏暖（情绪分 +2）
-- 相关消息：
-  - `09-18 23:49` **华尔街见闻**：[报道：日本央行进行汇率摸底](https://wallstreetcn.com/livenews/3167404) — 外部风险
-  - `09-18 23:28` **同花顺**：[On昂跑签约球星姆巴佩 亚太区公关负责人回应](https://news.10jqka.com.cn/20260918/c680078509.shtml) — 足球概念、体育产业、昂跑
-  - `09-18 20:25` **日本股市/汽车之家**：[受伊朗危机影响，日本股市下挫](https://news.google.com/rss/articles/CBMia0FVX3lxTE0yUURwMGZsNXVYcGwyamZPbGZ0SzZHQnRiNE9KRmp2b3M3emZNd0FhRUs0VkQwYm90eGtyV1prUUtiYzdfMk9QS1liQ1czRi1EYlZzVm9FNUlhTGt6NFRyUlZrbTZMdGJ1S0M4?oc=5)
-
 ### 创业板ETF `sz159915` — 持有观察
 
 - 评分 +2.35　趋势：修复中　强弱：略弱于沪深300
@@ -410,8 +276,6 @@
   - 近1周跑赢沪深300 1.56 个百分点（自身 +1.50%）
   - 价格重新站上20日均线，但60日均线尚未转向，属于修复阶段
 - 信号：处于近半年区间低位（20分位）；近3月最大回撤 -25.1%
-- 相关消息：
-  - `09-19 00:32` **同花顺**：[ETF流动性建设提速 做市商密集扩容](https://news.10jqka.com.cn/20260919/c680078749.shtml) — 创业板、资金流动性、ETF
 
 ### 有色金属ETF `sh512400` — 减仓或暂不参与
 
@@ -421,14 +285,6 @@
   - 近1月跑输沪深300 4.77 个百分点（自身 -7.18%）
   - 近1周跑输沪深300 1.19 个百分点（自身 -1.25%）
 - 信号：缩量（仅为20日均量的 0.6 倍）
-- 相关消息：
-  - `09-19 01:50` **同花顺**：[LME金属期货收盘涨跌不一](https://news.10jqka.com.cn/20260919/c680078857.shtml) — 伦敦金属交易所、监管资本市场
-  - `09-19 01:00` **华尔街见闻**：[国际铜夜盘收涨0.56%，沪铜收涨0.34%，沪铝收跌0.04%，沪锌收涨0.64%，沪铅收涨0.37%，沪镍收跌0.36%，沪锡收涨0.8](https://wallstreetcn.com/livenews/3167420)
-  - `09-19 00:53` **华尔街见闻**：[LME期铜收涨30美元，报14522美元/吨。
-
-LME期铝收跌13美元，报3288美元/吨。
-
-LME期锌收涨38美元，报3920美元/吨](https://wallstreetcn.com/livenews/3167419)
 
 ### 新能源ETF `sh516160` — 减仓或暂不参与
 
@@ -439,8 +295,6 @@ LME期锌收涨38美元，报3920美元/吨](https://wallstreetcn.com/livenews/3
   - 近1周跑赢沪深300 1.45 个百分点（自身 +1.39%）
   - 价格位于20日均线之下且均线下行，中期趋势仍偏弱
 - 信号：处于近半年区间低位（4分位）；近3月最大回撤 -23.3%
-- 相关消息：
-  - `09-18 22:58` **同花顺**：[我国力争到2030年三大主粮实现更高水平机械化](https://news.10jqka.com.cn/20260918/c680078341.shtml) — 农业机械、农业机械化、农业现代化
 
 ### 新能源车ETF `sh515030` — 减仓或暂不参与
 
@@ -454,29 +308,25 @@ LME期锌收涨38美元，报3920美元/吨](https://wallstreetcn.com/livenews/3
 
 ### 中概互联网ETF `sh513050` — 规避 / 逢反弹减仓
 
-- 评分 -6.71　趋势：空头排列　强弱：显著弱于沪深300
+- 评分 -7.21　趋势：空头排列　强弱：显著弱于沪深300
 - 今日 +1.10%　近1周 -0.10%（超额 -0.04%）　近1月 -9.38%（超额 -6.97%）
 - 理由：
   - 近1月跑输沪深300 6.97 个百分点（自身 -9.38%）
   - 近1周跑输沪深300 0.04 个百分点（自身 -0.10%）
   - 价格位于20日均线之下且均线下行，中期趋势仍偏弱
-- 信号：近3月最大回撤 -15.6%；消息面偏暖（情绪分 +1）
-- 相关消息：
-  - `09-18 22:47` **财联社**：[部分中概股走强，阿里巴巴、哔哩哔哩、金山云涨超4%，拼多多涨超2%。](https://www.cls.cn/detail/2487590) — 利弗莫尔中概股龙头指数、中概股情报站、中概股龙头指数
-  - `09-18 23:36` **同花顺**：[上海修法促进住宅物业治理提质增效](https://news.10jqka.com.cn/20260918/c680078530.shtml) — 上海、物业管理
-  - `09-18 19:32` **港股要闻/香港經濟日報HKET**：[【港股收市】恒指升146點聯想升逾9%破頂阿里巴巴升4% MINIMAX升近19%（不斷更新）](https://news.google.com/rss/articles/CBMi5wNBVV95cUxObnJ3OXVnaWd0SmxIakMzTzY4bFVCeFE3cVFKc0RtTUlpSkFQYXFScm5fREFXTjFqM3ByWGFlTVRzcXlJcm0zbGhxS2w1ZXR2Y3ZJSVNvMUlUaHdrVXB3OGNaMm4zM3FkaWJLX0xmRklWRFFVTnRmTUYyUkdETjduZ2d5T1FUX0Zub1BTSWpObnlLTmIza25iWVU2M0hJdk1Na2lVM1dwTjBSM0tnVm5tOGRxalZLR19odGxBNHIwZkdvb1VwR2NweTR0MkVpM2dMakhwZjBJb3U1dk1IV3lKVnFLNHlYeS1vYVJvNURRZlBxNGdwM29lNU1KQm1FOUlZS2hMc2x6YVpyc0ZfMy04RDJCNlJnbW53dWQyVFh4UmxFWkV2bDRuLXlJYlhoQjd0RHhkQnRXNnVtZ0VkLXFodXU3QTlUVW5IYUR6VUtVemM4Q29hSktWM1N6M3Y3MnFaSmZBVU40R2Nka0otTnRQS2p0cERTSnk5RF8wRUt4clBsVlBtazZsaUJoNzBiNU9jUjhmLVl6Mk16Sk1TVnRRNGh2Rk52SEJpUFhIeVNGU0hJOEJQZC1RV0JsV2RKZWJfU0xNMGw1RHpzeVhrVG9fTFZSdUpya2xMS3d1dGpWYUJDZ0d0SUhJ?oc=5)
+- 信号：近3月最大回撤 -15.6%
 
-其余标的暂列观望：红利低波ETF(+0.6)、消费ETF(+0.6)、证券ETF(+0.1)、软件ETF(+0.1)、养殖ETF(-0.1)、黄金ETF(-0.3)、机器人ETF(-0.9)、红利ETF(-1.2)、电力ETF(-1.6)、光伏ETF(-1.9)、上证50ETF(-2.0)、医药ETF(-2.1)、游戏ETF(-2.3)、煤炭ETF(-2.5)、沪深300ETF(-2.7)、酒ETF(-2.8)
+其余标的暂列观望：银行ETF(+1.8)、日经ETF(+1.6)、红利低波ETF(+0.6)、消费ETF(+0.1)、养殖ETF(-0.1)、黄金ETF(-0.3)、机器人ETF(-0.9)、红利ETF(-1.2)、软件ETF(-1.4)、电力ETF(-1.6)、光伏ETF(-1.9)、证券ETF(-1.9)、上证50ETF(-2.0)、医药ETF(-2.1)、游戏ETF(-2.3)、煤炭ETF(-2.5)、沪深300ETF(-2.7)、酒ETF(-2.8)
 
 ### 海外与大类资产提示
 
-- **WTI原油**（商品汇率）今日 -5.81%，近1周 -4.06%，近1月 +9.29%，多头排列；相对沪深300近1月 +11.70%
+- **WTI原油**（商品汇率）今日 -5.88%，近1周 -4.13%，近1月 +9.21%，多头排列；相对沪深300近1月 +11.63%
 - **韩国综合指数**（亚太）今日 +2.66%，近1周 -0.23%，近1月 -0.27%，修复中；相对沪深300近1月 +2.14%
 - **恒生科技指数**（港股）今日 +2.20%，近1周 -2.08%，近1月 -7.78%，空头排列；相对沪深300近1月 -5.37%
 - **台湾加权指数**（亚太）今日 +1.93%，近1周 +2.16%，近1月 +4.33%，多头排列；相对沪深300近1月 +6.74%
-- **COMEX铜**（商品汇率）今日 +1.78%，近1周 +3.62%，近1月 +3.77%，多头排列；相对沪深300近1月 +6.18%
+- **COMEX铜**（商品汇率）今日 +1.77%，近1周 +3.61%，近1月 +3.76%，多头排列；相对沪深300近1月 +6.18%
 - **德国DAX**（欧洲）今日 -1.60%，近1周 -1.03%，近1月 -3.19%，震荡；相对沪深300近1月 -0.77%
-- **VIX恐慌指数**（美股）今日 -1.10%，近1周 -3.60%，近1月 +0.93%，空头排列；相对沪深300近1月 +3.34%
+- **VIX恐慌指数**（美股）今日 -1.30%，近1周 -3.79%，近1月 +0.73%，空头排列；相对沪深300近1月 +3.14%
 
 ---
 

@@ -31,6 +31,7 @@ PYTHONPATH=src python -m mdbrief --json --notify
 | `--fresh-hours N` | 只保留最近 N 小时的资讯，默认 36（地区源自动放宽到 120） |
 | `--llm` | 调用 LLM 生成综述，需要 `LLM_API_KEY` |
 | `--notify` | 按环境变量推送到所有已配置渠道 |
+| `--check` | 只自检推送渠道配置（会真的调一次语雀接口验证凭据），不生成报告 |
 | `--json` | 额外输出 `reports/<日期>.json`，方便二次加工 |
 | `--config DIR` | 使用自定义配置目录 |
 | `--stdout` / `--no-save` | 打到标准输出 / 不写文件 |
@@ -130,8 +131,9 @@ groups:
 
 | 渠道 | 环境变量 | 收到的内容 |
 | --- | --- | --- |
-| 语雀 | `YUQUE_TOKEN`、`YUQUE_NAMESPACE` | 完整报告，存成知识库文档 |
+| 语雀 | `YUQUE_NAMESPACE` + `YUQUE_TOKEN` 或 `YUQUE_COOKIE` | 完整报告，存成知识库文档 |
 | Server酱（微信） | `SERVERCHAN_SENDKEY` | 摘要 |
+| PushPlus（微信） | `PUSHPLUS_TOKEN` | 摘要 |
 | 企业微信机器人 | `WECOM_WEBHOOK` | 摘要 |
 | 飞书机器人 | `FEISHU_WEBHOOK` | 摘要 |
 | Telegram | `TELEGRAM_BOT_TOKEN`、`TELEGRAM_CHAT_ID` | 摘要 |
@@ -139,24 +141,67 @@ groups:
 
 标题统一为 **`市场简报 2026-09-18 16:40`**（日期 + 时间），微信推送和语雀文档标题一致。
 
-LLM 综述（可选，任何 OpenAI 兼容接口）：`LLM_API_KEY`、`LLM_BASE_URL`（默认 DeepSeek）、`LLM_MODEL`。
-
-### 写入语雀
-
-1. 到 <https://www.yuque.com/settings/tokens> 生成一个 Token（勾选知识库的读写权限）。
-2. 设两个环境变量即可：
+配完先自检一次，它会真的调一次语雀接口验证凭据，不用等到定时任务才发现配错：
 
 ```bash
-export YUQUE_TOKEN=你的token
-export YUQUE_NAMESPACE=你的语雀用户名/market-brief   # 形如 login/repo-slug
-
-PYTHONPATH=src python -m mdbrief --notify
+PYTHONPATH=src python -m mdbrief --check
 ```
 
-`YUQUE_NAMESPACE` 里的知识库**不存在时会自动创建**（名为「市场简报」，私密）。
-`login` 就是你语雀主页 URL 里的那一段，`repo-slug` 自己起一个英文短名。
+LLM 综述（可选，任何 OpenAI 兼容接口）：`LLM_API_KEY`、`LLM_BASE_URL`（默认 DeepSeek）、`LLM_MODEL`。
 
-可选变量：
+## 三个关键变量怎么获取
+
+### `YUQUE_NAMESPACE`：语雀知识库地址
+
+格式是 `login/repo-slug`，两段都能从 URL 里直接看出来：
+
+- `login`：打开语雀，点右上角头像进个人主页，地址栏 `https://www.yuque.com/**abcd**` 里的 `abcd` 就是。
+  注意它是**账号路径**，不是昵称，昵称可以是中文但 login 一定是英文。
+- `repo-slug`：知识库地址 `https://www.yuque.com/abcd/**market-brief**` 的第二段。
+  **这个知识库不用先建**——Token 模式下第一次运行会自动创建（名为「市场简报」，私密）。
+
+所以填 `abcd/market-brief` 即可。团队知识库同理，第一段换成团队的 login（自动建库会落到团队下）。
+
+### `YUQUE_TOKEN`：语雀访问令牌（⚠️ 需要超级会员）
+
+1. 登录语雀 → 右上角头像 → **账户设置** → 左侧 **Token**（直达 <https://www.yuque.com/settings/tokens>）
+2. 点新建，权限至少勾上知识库和文档的**读 + 写**，创建后**只显示一次**，立刻复制。
+3. `export YUQUE_TOKEN=粘贴进来`
+
+**注意**：语雀从 2022 年起把开放 API 的 Personal Access Token 划入**超级会员**权益，
+免费账号打开那个页面建不出 Token。如果你没有超级会员，用下面的 Cookie 模式。
+
+#### 没有超级会员：Cookie 模式（免费，实验性）
+
+走的是语雀网页端自己在用的内部接口（`/api/docs` 等），**不是公开 API**：语雀改版可能失效，
+而且 Cookie 大约两周过期，需要重新粘贴一次。适合先试用，长期无人值守还是建议 Token。
+
+1. 浏览器登录语雀，随便打开一个知识库页面。
+2. 按 F12 → **Network** 标签 → 刷新页面 → 点任意一个 `www.yuque.com` 的请求 →
+   在 Request Headers 里找到 `Cookie:`，**复制整行的值**。
+3. 确认里面同时包含 `_yuque_session=` 和 `yuque_ctoken=`（后者是写操作要用的 CSRF 令牌，缺了会被拦）。
+4. `export YUQUE_COOKIE='粘贴整段cookie'`（用单引号，里面有分号和空格）
+
+Cookie 模式**不会自动建知识库**，请先在语雀网页上手动建一个，slug 和 `YUQUE_NAMESPACE` 第二段对上。
+
+### `SERVERCHAN_SENDKEY`：微信推送密钥
+
+1. 打开 <https://sct.ftqq.com> ，用**微信扫码**登录（就是注册）。
+2. 进「SendKey」页面，复制那串以 `SCT` 开头的密钥。
+3. 同一页面按提示**关注公众号完成微信绑定**，否则发出去的消息没有落点。
+4. `export SERVERCHAN_SENDKEY=SCTxxxxxx`
+
+**免费额度每天 5 条**，本项目每天推 2 条（A股收盘 + 美股收盘），够用；但如果你手动触发调试
+多跑几次就可能撞额度。另外免费版微信卡片**只显示标题不显示正文**，想看内容得点进去。
+
+两个替代选择：
+
+- **PushPlus**（`PUSHPLUS_TOKEN`）：<https://www.pushplus.plus> 微信扫码登录后复制 token，
+  免费额度比 Server酱 宽松，配了就会一起推。
+- **Server酱³**（key 以 `sctp` 开头，在 <https://sc3.ft07.com> 获取）：推到独立 App 而不是微信，
+  本项目会按前缀自动识别并切换到对应接口，仍然填在 `SERVERCHAN_SENDKEY` 里。
+
+### 语雀可选变量
 
 | 变量 | 默认 | 说明 |
 | --- | --- | --- |
@@ -206,12 +251,13 @@ docker run --rm -v "$PWD:/app" -w /app -e PYTHONPATH=src \
 
 ```bash
 pip install pytest
-python -m pytest        # 43 个用例，全部离线，不打网络
+python -m pytest        # 52 个用例，全部离线，不打网络
 ```
 
 测试覆盖指标计算、Yahoo 昨收推导（含当日K线缺失、历史稀疏两种情况）、腾讯报文解析、
-规则引擎的各档动作、资讯去重与国内外分类、报告表格结构、语雀发布（新建/覆盖/自动建库/
-目录挂载降级/错误上抛）以及推送分发（微信收摘要、语雀收全文、单渠道失败不影响其他）。
+规则引擎的各档动作、资讯去重与国内外分类、报告表格结构、语雀发布（Token 模式的新建/覆盖/
+个人与团队自动建库/目录挂载降级、Cookie 模式的先写草稿再发布）、Server酱 两条产品线的
+端点识别，以及推送分发（微信收摘要、语雀收全文、单渠道失败不影响其他）。
 
 ## 已知局限
 

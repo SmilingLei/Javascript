@@ -49,14 +49,17 @@ jobs:
 
       - name: 生成报告
         env:
-          YUQUE_TOKEN: ${{ secrets.YUQUE_TOKEN }}
           YUQUE_NAMESPACE: ${{ secrets.YUQUE_NAMESPACE }}
+          YUQUE_TOKEN: ${{ secrets.YUQUE_TOKEN }}
+          # 没有语雀超级会员时用 Cookie 兜底，约两周需更新一次
+          YUQUE_COOKIE: ${{ secrets.YUQUE_COOKIE }}
           YUQUE_BASE_URL: ${{ secrets.YUQUE_BASE_URL }}
           YUQUE_PUBLIC: ${{ secrets.YUQUE_PUBLIC }}
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_BASE_URL: ${{ secrets.LLM_BASE_URL }}
           LLM_MODEL: ${{ secrets.LLM_MODEL }}
           SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
+          PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
           WECOM_WEBHOOK: ${{ secrets.WECOM_WEBHOOK }}
           FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
