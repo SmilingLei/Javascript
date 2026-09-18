@@ -31,6 +31,7 @@ PYTHONPATH=src python -m mdbrief --json --notify
 | `--fresh-hours N` | 只保留最近 N 小时的资讯，默认 36（地区源自动放宽到 120） |
 | `--llm` | 调用 LLM 生成综述，需要 `LLM_API_KEY` |
 | `--notify` | 按环境变量推送到所有已配置渠道 |
+| `--test-push` | 只发一条测试消息，验证微信/语雀等渠道是否通 |
 | `--check` | 只自检推送渠道配置（会真的调一次语雀接口验证凭据），不生成报告 |
 | `--json` | 额外输出 `reports/<日期>.json`，方便二次加工 |
 | `--config DIR` | 使用自定义配置目录 |
@@ -144,7 +145,11 @@ groups:
 配完先自检一次，它会真的调一次语雀接口验证凭据，不用等到定时任务才发现配错：
 
 ```bash
-PYTHONPATH=src python -m mdbrief --check
+# 本地把密钥写在 market-daily-brief/.env（已加入 .gitignore，不会进仓库）
+cp .env.example .env   # 然后填入 SERVERCHAN_SENDKEY=SCT...
+
+PYTHONPATH=src python -m mdbrief --check      # 看渠道是否就绪
+PYTHONPATH=src python -m mdbrief --test-push  # 立刻往微信发一条测试
 ```
 
 LLM 综述（可选，任何 OpenAI 兼容接口）：`LLM_API_KEY`、`LLM_BASE_URL`（默认 DeepSeek）、`LLM_MODEL`。

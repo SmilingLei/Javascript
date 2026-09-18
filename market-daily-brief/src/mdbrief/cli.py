@@ -9,7 +9,7 @@ import logging
 import sys
 from pathlib import Path
 
-from . import llm, notify, report
+from . import envfile, llm, notify, report
 from .config import PACKAGE_ROOT, load_config
 from .pipeline import build_brief
 
@@ -33,6 +33,8 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument("--no-save", action="store_true", help="不写文件")
     p.add_argument("--check", action="store_true",
                    help="只自检推送渠道配置（会真的调一次语雀接口验证凭据），不生成报告")
+    p.add_argument("--test-push", action="store_true",
+                   help="只发一条测试消息到已配置渠道，不抓行情")
     p.add_argument("-v", "--verbose", action="store_true")
     return p
 
@@ -57,6 +59,31 @@ def _check_channels() -> int:
         print("可用渠道：" + "、".join(ready_names))
         return 0
     print("没有任何渠道就绪，报告仍会写到 reports/，但不会推送。配置方法见 README「推送与归档」。")
+    return 1
+
+
+def _test_push() -> int:
+    import datetime as dt
+
+    from .pipeline import CST
+
+    now = dt.datetime.now(CST)
+    title = f"市场简报测试 {now:%Y-%m-%d %H:%M}"
+    body = (
+        "这是一条连通性测试。如果你在微信里看到这条消息，说明 SendKey 已经生效。\n\n"
+        "正式日报会在每个交易日 16:20 和次日 06:30 自动推送。"
+    )
+    results = notify.notify_all(title, body, body, yuque_slug=None)
+    sent = []
+    for name, status in results.items():
+        print(f"  {name}: {status}")
+        if status.startswith("已"):
+            sent.append(name)
+    print()
+    if sent:
+        print("请打开微信（服务号「方糖」或你绑定的通道）确认是否收到：" + "、".join(sent))
+        return 0
+    print("没有渠道发送成功。先运行 `python -m mdbrief --check` 看缺什么。")
     return 1
 
 
@@ -91,9 +118,14 @@ def main(argv: list[str] | None = None) -> int:
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
     log = logging.getLogger("mdbrief")
+    loaded = envfile.load_dotenv()
+    if loaded:
+        log.info("已加载本地密钥文件 %s", loaded.name)
 
     if args.check:
         return _check_channels()
+    if args.test_push:
+        return _test_push()
 
     config = load_config(args.config)
     log.info("观察列表 %d 个标的，资讯源 %d 个",

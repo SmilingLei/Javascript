@@ -1,4 +1,5 @@
 import datetime as dt
+import os
 
 from mdbrief import notify
 from mdbrief.pipeline import CST, Brief
@@ -33,7 +34,23 @@ def test_notify_all_reports_unconfigured_channels(monkeypatch):
     assert set(results) == {"语雀", "Server酱", "PushPlus", "企业微信", "飞书", "Telegram", "邮件"}
 
 
-def test_serverchan_endpoint_detects_product_line():
+def test_serverchan_ok_reads_business_code_not_http_status():
+    ok, detail = notify._serverchan_ok({"code": 0, "data": {"pushid": "123"}})
+    assert ok is True and "123" in detail
+    ok, detail = notify._serverchan_ok({"code": 40001, "message": "bad pushtoken"})
+    assert ok is False and "bad pushtoken" in detail
+
+
+def test_load_dotenv_does_not_override_existing_env(tmp_path, monkeypatch):
+    from mdbrief.envfile import load_dotenv
+
+    env = tmp_path / ".env"
+    env.write_text("SERVERCHAN_SENDKEY=from-file\nOTHER=abc\n", encoding="utf-8")
+    monkeypatch.setenv("SERVERCHAN_SENDKEY", "already-set")
+    monkeypatch.delenv("OTHER", raising=False)
+    assert load_dotenv(env) == env
+    assert os.environ["SERVERCHAN_SENDKEY"] == "already-set"
+    assert os.environ["OTHER"] == "abc"
     # Turbo 的 key 以 SCT 开头，推微信
     assert notify.serverchan_endpoint("SCT12345xyz") == "https://sctapi.ftqq.com/SCT12345xyz.send"
     # Server酱³ 的 key 形如 sctp{uid}t...，域名里要带 uid

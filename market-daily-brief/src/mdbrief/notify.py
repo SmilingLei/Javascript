@@ -16,9 +16,23 @@ log = logging.getLogger(__name__)
 TIMEOUT = 20
 
 
-def _post(url: str, **kwargs) -> None:
+def _post(url: str, **kwargs) -> requests.Response:
     resp = requests.post(url, timeout=TIMEOUT, **kwargs)
     resp.raise_for_status()
+    return resp
+
+
+def _serverchan_ok(payload: object) -> tuple[bool, str]:
+    """Server酱 即使失败也经常返回 HTTP 200，必须看 JSON 里的 code/errno。"""
+    if not isinstance(payload, dict):
+        return True, "已发送"
+    code = payload.get("code", payload.get("errno"))
+    if code in (0, None, "0"):
+        data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
+        pushid = data.get("pushid")
+        return True, f"已发送（pushid={pushid}）" if pushid else "已发送"
+    message = payload.get("message") or payload.get("msg") or str(payload)
+    return False, f"接口拒绝: {message}"
 
 
 def serverchan_endpoint(key: str) -> str:
@@ -38,7 +52,15 @@ def push_serverchan(title: str, content: str) -> bool:
     key = os.getenv("SERVERCHAN_SENDKEY")
     if not key:
         return False
-    _post(serverchan_endpoint(key), data={"title": title[:100], "desp": content})
+    resp = _post(serverchan_endpoint(key), data={"title": title[:100], "desp": content})
+    try:
+        payload = resp.json()
+    except ValueError:
+        return True
+    ok, detail = _serverchan_ok(payload)
+    if not ok:
+        raise RuntimeError(detail)
+    log.info("Server酱 %s", detail)
     return True
 
 
