@@ -12,7 +12,6 @@ from .http import Http
 from .models import Assessment, Bar, Instrument, Metrics
 from .news import NewsBundle, collect
 from .providers import fetch_market_data
-from .providers.tencent import normalize_symbol
 
 log = logging.getLogger(__name__)
 
@@ -116,7 +115,3 @@ def build_brief(config: Config, *, http: Http | None = None, skip_news: bool = F
         if own_http:
             http.close()
     return brief
-
-
-def normalize(symbol: str) -> str:
-    return normalize_symbol(symbol)

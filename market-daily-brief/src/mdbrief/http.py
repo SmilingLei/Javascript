@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import time
 from typing import Any
@@ -45,8 +46,6 @@ class Http:
         resp = self.get(url, **kwargs)
         if kwargs.get("encoding"):
             # 有些接口不声明 charset，requests 的自动探测会把中文解成乱码
-            import json
-
             return json.loads(resp.text)
         return resp.json()
 

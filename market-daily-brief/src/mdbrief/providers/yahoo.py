@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import datetime as dt
 import logging
 from urllib.parse import quote
 
@@ -18,8 +19,6 @@ CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
 
 def _session_date(meta: dict, bars: list[Bar]) -> str | None:
     """当前交易日：优先用 regularMarketTime（当日K线可能还没落库）。"""
-    import datetime as dt
-
     stamp = meta.get("regularMarketTime")
     if stamp:
         offset = meta.get("gmtoffset") or 0
@@ -43,8 +42,6 @@ def _extract(payload: dict) -> tuple[dict, list[Bar]]:
     highs = quotes.get("high") or []
     lows = quotes.get("low") or []
     volumes = quotes.get("volume") or []
-
-    import datetime as dt
 
     tz_offset = meta.get("gmtoffset") or 0
     bars: list[Bar] = []

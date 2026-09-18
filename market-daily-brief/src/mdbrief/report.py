@@ -5,6 +5,7 @@ from __future__ import annotations
 import datetime as dt
 from collections import OrderedDict
 
+from . import advisor
 from .models import Assessment, NewsItem
 from .pipeline import CST, Brief
 
@@ -238,8 +239,9 @@ def _section_actions(brief: Brief) -> list[str]:
         lines.append("")
 
     ranked = sorted(brief.cn_assessments, key=lambda a: -a.score)
-    actionable = [a for a in ranked if a.action != "观望，等信号"]
+    actionable = [a for a in ranked if a.action != advisor.ACTION_WAIT]
     show = actionable if actionable else ranked[:6]
+    shown = {id(a) for a in show}
 
     for a in show:
         m = a.metrics
@@ -260,7 +262,7 @@ def _section_actions(brief: Brief) -> list[str]:
                 lines.append(f"  - {_news_line(item)}")
         lines.append("")
 
-    skipped = [a for a in ranked if a not in show]
+    skipped = [a for a in ranked if id(a) not in shown]
     if skipped:
         lines.append("其余标的暂列观望：" + "、".join(
             f"{a.metrics.instrument.name}({a.score:+.1f})" for a in skipped))

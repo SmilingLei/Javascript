@@ -92,10 +92,8 @@ def _load_tencent(http: Http, instruments: list[Instrument], data: MarketData, b
 
 
 def _load_yahoo(http: Http, instruments: list[Instrument], data: MarketData) -> None:
-    targets: dict[str, list[str]] = {}
-    for inst in instruments:
-        targets.setdefault(inst.symbol, []).append("quote")
-        targets.setdefault(inst.history_key, []).append("bars")
+    # 一次 chart 请求同时带回报价和K线，代理标的也只是多一个代码
+    symbols = {i.symbol for i in instruments} | {i.history_key for i in instruments}
 
     def load(symbol: str) -> tuple[str, Quote | None, list[Bar], str | None]:
         try:
@@ -105,7 +103,7 @@ def _load_yahoo(http: Http, instruments: list[Instrument], data: MarketData) -> 
             return symbol, None, [], f"Yahoo 获取失败 {symbol}: {exc}"
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
-        for symbol, quote, bars, err in pool.map(load, sorted(targets)):
+        for symbol, quote, bars, err in pool.map(load, sorted(symbols)):
             if err:
                 data.errors.append(err)
                 continue

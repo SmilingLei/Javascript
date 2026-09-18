@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import datetime as dt
 import re
 
 from ..http import Http
@@ -69,8 +70,6 @@ def _ts(value: object) -> int | None:
     """新浪 create_time 形如 '2026-09-19 01:20:33'。"""
     if not value:
         return None
-    import datetime as dt
-
     try:
         naive = dt.datetime.strptime(str(value), "%Y-%m-%d %H:%M:%S")
         return int(naive.replace(tzinfo=dt.timezone(dt.timedelta(hours=8))).timestamp())
